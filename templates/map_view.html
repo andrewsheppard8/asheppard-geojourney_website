@@ -5,22 +5,19 @@
 {% block content %}
 <h1>Trip Map</h1>
 
-<div style="display: flex; gap: 20px;">
-
+<div id="map-container">
     <!-- Sidebar for timeline -->
-    <div id="timeline" style="width: 250px; max-height: 600px; overflow-y: auto; border:1px solid #ccc; padding:10px;">
+    <div id="timeline">
         <h3>Timeline of Visits</h3>
-        <ul id="location-list" style="list-style:none; padding-left:0;"></ul>
+        <ul id="location-list"></ul>
     </div>
 
     <!-- Map container -->
-    <div id="map" style="flex:1; height: 600px;"></div>
+    <div id="map"></div>
 </div>
 
 <!-- Leaflet CSS & JS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
-<!-- Load our JS -->
 <script src="{{ url_for('static', filename='js/load_cities.js') }}"></script>
 {% endblock %}
