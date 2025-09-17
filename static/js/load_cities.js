@@ -1,73 +1,71 @@
-// --------------------------
-// Initialize Leaflet Map
-// --------------------------
-const map = L.map('map').setView([20, 80], 2); // center world view
+// ---------------------------
+// Initialize map
+// ---------------------------
+const map = L.map('map').setView([20, 80], 2);
 
-// Add OpenStreetMap tiles
+// Add English OSM tiles
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors'
+    attribution: '&copy; OpenStreetMap contributors',
+    maxZoom: 19
 }).addTo(map);
 
-// --------------------------
-// Fetch GeoJSON and add to map
-// --------------------------
-let geojsonData = null;
+// Timeline container
+const timeline = document.getElementById("location-list");
 
+let geojsonLayer = null;
+let markers = []; // store markers to link with timeline
+
+// Load GeoJSON
 fetch("/static/data/cities.geojson")
   .then(res => res.json())
   .then(data => {
-      geojsonData = data;
+      // Sort features oldest -> newest
+      data.features.sort((a,b) => {
+          const dateA = a.properties.date ? new Date(a.properties.date) : new Date(0);
+          const dateB = b.properties.date ? new Date(b.properties.date) : new Date(0);
+          return dateA - dateB;
+      });
 
-      // Add GeoJSON points to map
-      L.geoJSON(geojsonData, {
+      geojsonLayer = L.geoJSON(data, {
           onEachFeature: function(feature, layer) {
-              const cityName = feature.properties?.city || "Unknown";
-              layer.bindPopup(`<strong>${cityName}</strong>`);
+              const cityName = feature.properties.city || "Unknown";
+              const dateStr = feature.properties.date || "";
+              const formattedDate = dateStr ? new Date(dateStr).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+              }) : "";
+
+              layer.bindPopup(`<b>${cityName}</b><br>${formattedDate}`);
+              markers.push({feature, layer});
           }
       }).addTo(map);
 
-      // Fit map to all markers
-      const bounds = L.geoJSON(geojsonData).getBounds();
-      if (bounds.isValid()) map.fitBounds(bounds);
+      // Auto-zoom
+      if (geojsonLayer.getBounds().isValid()) {
+          map.fitBounds(geojsonLayer.getBounds().pad(0.2));
+      }
 
+      // Build interactive timeline
+      markers.forEach((m, i) => {
+          const li = document.createElement("li");
+          li.style.cursor = "pointer";
+          li.style.marginBottom = "6px";
+          const cityName = m.feature.properties.city || "Unknown";
+          const dateStr = m.feature.properties.date || "";
+          const formattedDate = dateStr ? new Date(dateStr).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+          }) : "";
+
+          li.textContent = `${formattedDate} - ${cityName}`;
+          li.addEventListener("click", () => {
+            //   map.setView(m.layer.getLatLng(), 8, {animate:true});
+              m.layer.openPopup();
+          });
+
+          timeline.appendChild(li);
+      });
   })
   .catch(err => console.error("Error loading GeoJSON:", err));
-
-// --------------------------
-// Existing button logic (GeoJSON toggle & download)
-// --------------------------
-const container = document.getElementById("map-buttons");
-
-// Toggle GeoJSON display
-const toggleBtn = document.createElement("button");
-toggleBtn.textContent = "Show GeoJSON";
-toggleBtn.style.marginRight = "10px";
-container.appendChild(toggleBtn);
-
-const output = document.getElementById("output");
-toggleBtn.addEventListener("click", () => {
-    if (output.style.display === "none") {
-        output.style.display = "block";
-        toggleBtn.textContent = "Hide GeoJSON";
-        if (geojsonData) output.textContent = JSON.stringify(geojsonData, null, 2);
-    } else {
-        output.style.display = "none";
-        toggleBtn.textContent = "Show GeoJSON";
-    }
-});
-
-// Download GeoJSON
-const downloadBtn = document.createElement("button");
-downloadBtn.textContent = "Download GeoJSON";
-container.appendChild(downloadBtn);
-
-downloadBtn.addEventListener("click", () => {
-    const link = document.createElement("a");
-    link.href = "/static/data/cities.geojson";
-    link.download = "cities.geojson";
-    document.body.appendChild(link);
-    setTimeout(() => {
-        link.click();
-        document.body.removeChild(link);
-    }, 100);
-});

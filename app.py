@@ -279,6 +279,94 @@ def delete_picture(pic_id):
     return redirect(url_for("admin_pictures"))
 
 # -------------------------
+# Admin Routes: Map_View
+# -------------------------
+@app.route("/admin/geojson", methods=["GET", "POST"])
+@requires_auth
+def admin_geojson():
+    """
+    Admin page for managing the cities.geojson file.
+    Supports:
+      - Editing existing features (city name, date, coordinates)
+      - Deleting features
+      - Adding new features with coordinates
+    """
+    geojson_path = os.path.join(BASE_DIR, "static", "data", "cities.geojson")
+
+    # -------------------
+    # Load existing GeoJSON
+    # -------------------
+    if os.path.exists(geojson_path):
+        with open(geojson_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    else:
+        data = {"type": "FeatureCollection", "features": []}
+
+    if request.method == "POST":
+        updated_features = []
+
+        # -------------------
+        # Update existing features
+        # -------------------
+        for i, feature in enumerate(data.get("features", [])):
+            if request.form.get(f"delete_{i}") == "on":
+                continue  # skip deleted features
+
+            # Update properties
+            feature["properties"]["city"] = request.form.get(
+                f"title_{i}", feature["properties"].get("city", "")
+            )
+            feature["properties"]["date"] = request.form.get(
+                f"date_{i}", feature["properties"].get("date", "")
+            )
+
+            # Update coordinates if provided
+            try:
+                lat = float(request.form.get(f"lat_{i}", feature["geometry"]["coordinates"][1]))
+                lng = float(request.form.get(f"lng_{i}", feature["geometry"]["coordinates"][0]))
+                feature["geometry"]["coordinates"] = [lng, lat]
+            except (TypeError, ValueError):
+                pass  # keep original if invalid
+
+            updated_features.append(feature)
+
+        data["features"] = updated_features
+
+        # -------------------
+        # Add new feature if provided
+        # -------------------
+        new_city = request.form.get("new_city")
+        new_date = request.form.get("new_date")
+        new_lat = request.form.get("new_lat")
+        new_lng = request.form.get("new_lng")
+
+        if new_city and new_lat and new_lng:
+            try:
+                lat = float(new_lat)
+                lng = float(new_lng)
+                new_feature = {
+                    "type": "Feature",
+                    "geometry": {"type": "Point", "coordinates": [lng, lat]},
+                    "properties": {"city": new_city, "date": new_date or ""}
+                }
+                data["features"].append(new_feature)
+            except ValueError:
+                pass  # ignore if coordinates are invalid
+
+        # -------------------
+        # Save updated GeoJSON back to file
+        # -------------------
+        os.makedirs(os.path.dirname(geojson_path), exist_ok=True)
+        with open(geojson_path, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2)
+
+        return redirect(url_for("admin_geojson"))
+
+    # -------------------
+    # GET request → render admin page
+    # -------------------
+    return render_template("admin_geojson.html", features=data.get("features", []))
+# -------------------------
 # Run the Flask App
 # -------------------------
 if __name__ == "__main__":
