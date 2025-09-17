@@ -1,7 +1,8 @@
 import sqlite3
 import os
 import json
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from functools import wraps
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Response
 from datetime import datetime
 
 # -------------------------
@@ -67,7 +68,7 @@ def home():
 @app.route("/map")
 def map_view():
     """Map page showing visited places."""
-    return render_template("map.html")
+    return render_template("map_view.html")
 
 @app.route("/pictures")
 def pictures():
@@ -116,9 +117,40 @@ def get_coordinates(city_name):
     return jsonify({"error": "City not found"}), 404
 
 # -------------------------
+# Admin Login
+# -------------------------
+
+# Simple credentials
+USERNAME = "admin"
+PASSWORD = "BurtoN12#"
+
+# Decorator to protect routes
+def check_auth(username, password):
+    return username == USERNAME and password == PASSWORD
+
+def authenticate():
+    """Sends a 401 response that enables basic auth"""
+    return Response(
+        'Login required', 401,
+        {'WWW-Authenticate': 'Basic realm="Admin Area"'}
+    )
+
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth = request.authorization
+        if not auth or not check_auth(auth.username, auth.password):
+            return authenticate()
+        return f(*args, **kwargs)
+    return decorated
+
+
+
+# -------------------------
 # Admin Routes: Dashboard
 # -------------------------
-@app.route("/admin/dashboard")
+@app.route("/admin")
+@requires_auth
 def admin_dashboard():
     return render_template("admin_dashboard.html")
 
@@ -126,6 +158,7 @@ def admin_dashboard():
 # Admin Routes: Blog
 # -------------------------
 @app.route("/admin/blog", methods=["GET", "POST"])
+@requires_auth
 def admin_blog():
     """Admin interface to add, edit, and view blog posts."""
     conn = get_blog_connection()
@@ -182,6 +215,7 @@ def delete_blog_post(post_id):
 # Admin Routes: Pictures
 # -------------------------
 @app.route("/admin/pictures", methods=["GET", "POST"])
+@requires_auth
 def admin_pictures():
     """Admin interface to add/edit pictures."""
     conn = get_db_connection()

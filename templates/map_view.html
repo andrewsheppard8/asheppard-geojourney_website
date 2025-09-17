@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Map{% endblock %}
+
+{% block content %}
+<h1>Trip Map</h1>
+
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+<!-- Map container -->
+<div id="map"></div>
+
+<!-- Buttons for download / toggle (optional) -->
+<div id="map-buttons" style="margin-bottom:20px;"></div>
+<pre id="output" style="display:none; border:1px solid #ccc; padding:10px; max-height:400px; overflow:auto;"></pre>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="{{ url_for('static', filename='js/load_cities.js') }}"></script>
+{% endblock %}

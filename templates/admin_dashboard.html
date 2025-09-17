@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<h1>Admin Dashboard</h1>
+<p>Access all admin functions from here:</p>
+
+<ul>
+    <li><a href="{{ url_for('admin_pictures') }}">Manage Pictures</a></li>
+    <li><a href="{{ url_for('admin_blog') }}">Manage Blog Posts</a></li>
+    <!-- Add more admin pages as needed -->
+</ul>
+{% endblock %}
