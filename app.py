@@ -1,8 +1,10 @@
 import sqlite3
 import os
+import io
+import zipfile
 import json
 from functools import wraps
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Response
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Response, send_file
 from datetime import datetime
 from dotenv import load_dotenv
 
@@ -370,6 +372,38 @@ def admin_geojson():
     # GET request → render admin page
     # -------------------
     return render_template("admin_geojson.html", features=data.get("features", []))
+
+# -------------------------
+# Downloading the databases
+# -------------------------
+@app.route("/download")
+@requires_auth
+def download_all():
+    # Create an in-memory bytes buffer
+    zip_buffer = io.BytesIO()
+
+    # Create a zip archive in the buffer
+    with zipfile.ZipFile(zip_buffer, "w") as zip_file:
+        # Add files to the zip
+        zip_file.write("db/pictures.db", arcname="pictures.db")
+        zip_file.write("db/blog.db", arcname="blog.db")
+        zip_file.write("static/data/cities.geojson", arcname="cities.geojson")
+    
+    # Make sure the buffer’s pointer is at the start
+    zip_buffer.seek(0)
+
+    # Create a filename with the current date
+    date_str = datetime.now().strftime("%Y-%m-%d")
+    zip_filename = f"databases_{date_str}.zip"
+
+    # Return the zip as a downloadable attachment
+    return send_file(
+        zip_buffer,
+        as_attachment=True,
+        download_name=zip_filename,
+        mimetype="application/zip"
+    )
+
 # -------------------------
 # Run the Flask App
 # -------------------------

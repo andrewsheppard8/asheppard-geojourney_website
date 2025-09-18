@@ -4,6 +4,9 @@ venv/
 #admin passwords
 .env
 
+# Backups of SQLite databases
+/backups/
+
 # Miscellaneous Python files
 /misc_py_files/
 
