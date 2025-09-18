@@ -62,20 +62,6 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          31.091309,
-          6.156029
-        ]
-      },
-      "properties": {
-        "city": "Other",
-        "date": "2025-11-13"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
           98.948364,
           42.322509
         ]

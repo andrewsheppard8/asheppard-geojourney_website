@@ -15,11 +15,11 @@ app.secret_key = "supersecret"  # required for flash messages
 # Paths and Folders
 # -------------------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_NAME = os.path.join(BASE_DIR, "pictures.db")
+DB_NAME = os.path.join(BASE_DIR, "db", "pictures.db")
 IMAGE_FOLDER = os.path.join(BASE_DIR, "static", "images")
 os.makedirs(IMAGE_FOLDER, exist_ok=True)  # ensure folder exists
 
-BLOG_DB = os.path.join(BASE_DIR, "blog.db")
+BLOG_DB = os.path.join(BASE_DIR, "db", "blog.db")
 GEOJSON_PATH = os.path.join(BASE_DIR, "static", "data", "cities.geojson")
 
 # -------------------------
