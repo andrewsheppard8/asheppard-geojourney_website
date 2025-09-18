@@ -13,7 +13,7 @@ load_dotenv()
 # Flask App Initialization
 # -------------------------
 app = Flask(__name__)
-app.secret_key = "supersecret"  # required for flash messages
+app.secret_key = os.getenv("SECRET_KEY", "fallback-secret")
 
 # -------------------------
 # Paths and Folders
