@@ -1,6 +1,9 @@
 # Virtual environment
 venv/
 
+#admin passwords
+.env
+
 # Miscellaneous Python files
 /misc_py_files/
 

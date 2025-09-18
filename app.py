@@ -4,6 +4,10 @@ import json
 from functools import wraps
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Response
 from datetime import datetime
+from dotenv import load_dotenv
+
+# Load environment variables from .env for admin credentials
+load_dotenv()
 
 # -------------------------
 # Flask App Initialization
@@ -120,9 +124,9 @@ def get_coordinates(city_name):
 # Admin Login
 # -------------------------
 
-# Simple credentials
-USERNAME = "admin"
-PASSWORD = "BurtoN12#"
+# Pull credentials from environment
+USERNAME = os.getenv("ADMIN_USERNAME")
+PASSWORD = os.getenv("ADMIN_PASSWORD")
 
 # Decorator to protect routes
 def check_auth(username, password):
