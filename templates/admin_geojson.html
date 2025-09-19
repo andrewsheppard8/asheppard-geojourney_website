@@ -5,38 +5,62 @@
 {% block content %}
 <div class="admin-page">
     <h1>Manage GeoJSON Features</h1>
+
     <form method="POST" id="geojson-form">
 
+        <!-- ------------------------- -->
+        <!-- Map & Geocoding Search -->
+        <!-- ------------------------- -->
         <h2>Leaflet Map (Drag markers or click to add new cities)</h2>
-        <div id="map" style="height: 600px; margin-bottom:20px; border-radius:8px;"></div>
 
+        <div id="geocode-search" style="margin-bottom:10px;">
+            <input type="text" id="address-input" placeholder="Enter city or address" style="width:70%; padding:5px;">
+            <button type="button" id="geocode-btn" style="padding:6px 12px;">Locate</button>
+        </div>
+
+        <div id="map"></div>
+
+        <!-- ------------------------- -->
+        <!-- Add New City Form -->
+        <!-- ------------------------- -->
         <h2>Add New City (Optional: click on map to auto-fill coordinates)</h2>
+
         <label>City Name:<br>
-            <input type="text" name="new_city" id="new_city">
-        </label><br>
+            <input type="text" name="new_city" id="new_city" style="width:50%;">
+        </label><br><br>
+
         <label>Date:<br>
             <input type="date" name="new_date" id="new_date">
-        </label><br>
+        </label><br><br>
+
         <label>Latitude:<br>
             <input type="number" step="any" name="new_lat" id="new_lat">
-        </label><br>
+        </label><br><br>
+
         <label>Longitude:<br>
             <input type="number" step="any" name="new_lng" id="new_lng">
-        </label><br>
+        </label><br><br>
 
+        <!-- ------------------------- -->
+        <!-- Existing Cities -->
+        <!-- ------------------------- -->
         <h2>Existing Cities</h2>
         {% for feature in features %}
         <div style="border:1px solid #ccc; padding:10px; margin-bottom:15px; border-radius:6px;">
             <h3>Feature {{ loop.index }}</h3>
+
             <label>City:<br>
-                <input type="text" name="title_{{ loop.index0 }}" value="{{ feature['properties'].get('city','') }}">
-            </label><br>
+                <input type="text" name="title_{{ loop.index0 }}" value="{{ feature['properties'].get('city','') }}" style="width:50%;">
+            </label><br><br>
+
             <label>Date:<br>
                 <input type="date" name="date_{{ loop.index0 }}" value="{{ feature['properties'].get('date','') }}">
-            </label><br>
+            </label><br><br>
+
             <label>
                 <input type="checkbox" name="delete_{{ loop.index0 }}"> Delete this city
-            </label><br>
+            </label><br><br>
+
             <input type="hidden" name="lat_{{ loop.index0 }}" value="{{ feature['geometry']['coordinates'][1] }}">
             <input type="hidden" name="lng_{{ loop.index0 }}" value="{{ feature['geometry']['coordinates'][0] }}">
         </div>
@@ -46,40 +70,41 @@
     </form>
 </div>
 
+<!-- ------------------------- -->
 <!-- Leaflet CSS/JS -->
+<!-- ------------------------- -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
+<!-- ------------------------- -->
+<!-- Pass GeoJSON from Flask -->
+<!-- ------------------------- -->
 <script>
-    // Initialize the map
-    const map = L.map('map').setView([20, 0], 2);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-
-    /** 
-     * @type {Array<{geometry: {coordinates: [number, number]}, properties: {city: string}}>} 
-     */
-    window.geojsonFeatures = {{ features|tojson|safe }};
-
-    window.geojsonFeatures.forEach((feature, idx) => {
-        const coords = feature.geometry.coordinates;
-        const marker = L.marker([coords[1], coords[0]], { draggable: true }).addTo(map)
-            .bindPopup(feature.properties.city);
-
-        // Update hidden form inputs when marker is dragged
-        marker.on('dragend', (e) => {
-            document.querySelector(`input[name="lat_${idx}"]`).value = e.target.getLatLng().lat;
-            document.querySelector(`input[name="lng_${idx}"]`).value = e.target.getLatLng().lng;
-        });
-    });
-
-    // Fill new city coordinates when map is clicked
-    map.on('click', function(e) {
-        const { lat, lng } = e.latlng;
-        document.getElementById("new_lat").value = lat.toFixed(6);
-        document.getElementById("new_lng").value = lng.toFixed(6);
-    });
+    window.geojsonFeatures = {{ features | tojson | safe }};
 </script>
+
+<!-- ------------------------- -->
+<!-- Admin Map JS -->
+<!-- ------------------------- -->
+<script src="{{ url_for('static', filename='js/admin_map.js') }}"></script>
+
+<style>
+    /* Ensure map renders properly */
+    #map {
+        width: 100%;
+        height: 600px;
+        min-height: 400px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+    }
+
+    #geocode-search input {
+        max-width: 70%;
+    }
+
+    #geocode-search button {
+        margin-left: 10px;
+    }
+</style>
+
 {% endblock %}

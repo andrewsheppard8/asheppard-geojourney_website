@@ -6,6 +6,11 @@
 <section class="map-page">
     <h1>Trip Map</h1>
 
+    <!-- <div id="geocode-search">
+        <input type="text" id="address-input" placeholder="Enter a city or address" />
+        <button id="geocode-btn">Locate</button>
+    </div> -->
+
     <div id="map-container">
         <!-- Sidebar for timeline -->
         <aside id="timeline">
@@ -19,7 +24,10 @@
 </section>
 
 <!-- Leaflet CSS & JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="{{ url_for('static', filename='js/load_cities.js') }}"></script>
+<script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 {% endblock %}

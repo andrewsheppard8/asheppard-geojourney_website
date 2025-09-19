@@ -4,8 +4,8 @@
     {
       "type": "Feature",
       "properties": {
-        "city": "Ulaanbaatar",
-        "date": "2025-09-17"
+        "city": "Ulaanbaatar, Mongolia",
+        "date": "2025-09-25"
       },
       "geometry": {
         "coordinates": [
@@ -17,44 +17,170 @@
     },
     {
       "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -117.41253,
+          33.96032
+        ]
+      },
       "properties": {
-        "city": "Beijing",
+        "city": "Riverside, CA, USA",
+        "date": "2025-09-18"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -117.585415,
+          34.222786
+        ]
+      },
+      "properties": {
+        "city": "Cucamonga Peak, CA",
+        "date": "2025-06-18"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -117.646405,
+          34.289121
+        ]
+      },
+      "properties": {
+        "city": "Mount San Antonio, CA",
+        "date": "2025-09-11"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -115.573154,
+          34.2505
+        ]
+      },
+      "properties": {
+        "city": "Sheephole Valley Wilderness, CA",
+        "date": "2025-09-04"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.468771,
+          33.97996
+        ]
+      },
+      "properties": {
+        "city": "Venice Beach, CA",
         "date": "2025-09-15"
-      },
-      "geometry": {
-        "coordinates": [
-          116.39234881885545,
-          39.9057685704602
-        ],
-        "type": "Point"
       }
     },
     {
       "type": "Feature",
-      "properties": {
-        "city": "Kathmandu",
-        "date": "2025-09-12"
-      },
       "geometry": {
+        "type": "Point",
         "coordinates": [
-          85.31095459607002,
-          27.714114883394444
-        ],
-        "type": "Point"
+          -110.111112,
+          36.982388
+        ]
+      },
+      "properties": {
+        "city": "Monument Valley, UT",
+        "date": "2025-06-18"
       }
     },
     {
       "type": "Feature",
-      "properties": {
-        "city": "Mahabalipuram",
-        "date": "2025-10-01"
-      },
       "geometry": {
+        "type": "Point",
         "coordinates": [
-          80.1934821036287,
-          12.619279577086061
-        ],
-        "type": "Point"
+          -112.096279,
+          36.098041
+        ]
+      },
+      "properties": {
+        "city": "Grand Canyon, AZ",
+        "date": "2025-06-15"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -116.918792,
+          34.088189
+        ]
+      },
+      "properties": {
+        "city": "Mt. San Gorgonio, CA",
+        "date": "2024-02-10"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -116.677004,
+          33.755422
+        ]
+      },
+      "properties": {
+        "city": "Tahquitz Peak, CA",
+        "date": "2025-08-30"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.508976,
+          28.215756
+        ]
+      },
+      "properties": {
+        "city": "Lang Tang Valley, Nepal",
+        "date": "2025-04-09"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.5587843518261,
+          28.151924899329828
+        ]
+      },
+      "properties": {
+        "city": "Lang Tang Valley, Nepal",
+        "date": "2024-04-11"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -116.312879,
+          34.12338
+        ]
+      },
+      "properties": {
+        "city": "Joshua Tree, CA",
+        "date": "2025-08-01"
       }
     }
   ]
