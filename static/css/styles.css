@@ -44,7 +44,65 @@ body {
 
 /* ===== Hero Section ===== */
 .hero {
-    background: url('../images/hero-bg.jpg') center/cover no-repeat;
+    background: linear-gradient(135deg, #1f1f1f, #121212); /* dark gradient */
+    position: relative;
+    text-align: center;
+    padding: 120px 20px; /* slightly taller for impact */
+    color: #ffffff;
+    overflow: hidden;
+}
+
+/* Optional overlay for depth */
+.hero::after {
+    content: "";
+    position: absolute;
+    top:0; left:0;
+    width:100%; height:100%;
+    background: rgba(0,0,0,0.4); /* subtle dark overlay */
+    z-index: 0;
+}
+
+/* Hero content sits above overlay */
+.hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: auto;
+}
+
+/* Headline */
+.hero-content h2 {
+    font-size: 3em;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+}
+
+/* Subheading / description */
+.hero-content p {
+    font-size: 1.3em;
+    margin-bottom: 25px;
+    text-shadow: 1px 1px 6px rgba(0,0,0,0.6);
+}
+
+/* Hero buttons */
+.btn-primary {
+    padding: 12px 25px;
+    background: #00bcd4;
+    color: #121212;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 1.1em;
+    font-weight: bold;
+    transition: background 0.3s, transform 0.2s;
+}
+.btn-primary:hover {
+    background: #0091a0;
+    transform: scale(1.05);
+}
+
+/* ===== Hero Section ===== */
+/*.hero {
+    background: url('https://source.unsplash.com/1600x600/?nature,travel') center/cover no-repeat;
     position: relative;
     text-align: center;
     padding: 100px 20px;
@@ -58,7 +116,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.6); /* dark overlay */
+    background-color: rgba(0,0,0,0.6); /* dark overlay 
     z-index: 0;
 }
 
@@ -89,6 +147,7 @@ body {
 .btn-primary:hover {
     background: #0091a0;
 }
+*/
 
 /* ===== Featured Cards ===== */
 .featured {
