@@ -1,20 +1,22 @@
 {% extends "base.html" %}
 
-{% block title %}Map{% endblock %}
+{% block title %}Trip Map{% endblock %}
 
 {% block content %}
-<h1>Trip Map</h1>
+<section class="map-page">
+    <h1>Trip Map</h1>
 
-<div id="map-container">
-    <!-- Sidebar for timeline -->
-    <div id="timeline">
-        <h3>Timeline of Visits</h3>
-        <ul id="location-list"></ul>
+    <div id="map-container">
+        <!-- Sidebar for timeline -->
+        <aside id="timeline">
+            <h3>Timeline of Visits</h3>
+            <ul id="location-list"></ul>
+        </aside>
+
+        <!-- Map container -->
+        <div id="map"></div>
     </div>
-
-    <!-- Map container -->
-    <div id="map"></div>
-</div>
+</section>
 
 <!-- Leaflet CSS & JS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />

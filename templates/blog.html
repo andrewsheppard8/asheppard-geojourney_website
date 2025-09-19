@@ -3,16 +3,17 @@
 {% block title %}Blog{% endblock %}
 
 {% block content %}
-<h1>Blog</h1>
+<section class="blog-page">
+    <h1>Blog</h1>
 
-<div style="display:flex; flex-direction:column; gap:20px;">
-    {% for post in posts %}
-    <div style="border:1px solid #ccc; padding:15px; border-radius:8px; background-color:#f9f9f9;">
-        <h2>{{ post['title'] }}</h2>
-        <p><em>{{ post['location'] }}</em> | <strong>{{ post['date'] | datetimeformat }}</strong></p>
-        <p>{{ post['description'] }}</p>
+    <div class="blog-list">
+        {% for post in posts %}
+        <div class="blog-post">
+            <h2>{{ post['title'] }}</h2>
+            <p class="post-meta"><em>{{ post['location'] }}</em> | <strong>{{ post['date'] | datetimeformat }}</strong></p>
+            <p>{{ post['description'] }}</p>
+        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
-</div>
-
+</section>
 {% endblock %}

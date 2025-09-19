@@ -1,8 +1,35 @@
 {% extends "base.html" %}
 
-{% block title %}Andrew Sheppard: Title Page{% endblock %}
+{% block title %}Home - Andrew Sheppard Geojourney{% endblock %}
 
 {% block content %}
-    <h1>Welcome to my page!</h1>
-    <p>Welcome to the title page. Choose an option from the navigation bar above.</p>
+<!-- Hero / Banner -->
+<section class="hero">
+    <div class="hero-content">
+        <h2>Welcome to My GeoJourney</h2>
+        <p>Exploring the world one map, picture, and blog post at a time.</p>
+    </div>
+</section>
+
+<!-- Featured Sections -->
+<section class="featured">
+    <div class="featured-card">
+        <i class="fas fa-map-marked-alt fa-3x"></i>
+        <h3>Maps</h3>
+        <p>Interactive maps showing my travels and explorations.</p>
+        <a href="{{ url_for('map_view') }}" class="btn-secondary">View Maps</a>
+    </div>
+    <div class="featured-card">
+        <i class="fas fa-camera-retro fa-3x"></i>
+        <h3>Pictures</h3>
+        <p>Gallery of my travels with high-quality photos.</p>
+        <a href="{{ url_for('pictures') }}" class="btn-secondary">View Pictures</a>
+    </div>
+    <div class="featured-card">
+        <i class="fas fa-blog fa-3x"></i>
+        <h3>Blog</h3>
+        <p>Read stories, tips, and experiences from my journeys.</p>
+        <a href="{{ url_for('blog') }}" class="btn-secondary">Read Blog</a>
+    </div>
+</section>
 {% endblock %}

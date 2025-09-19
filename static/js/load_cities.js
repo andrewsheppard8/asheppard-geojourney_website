@@ -6,11 +6,13 @@ let markers = [];         // store markers to link with timeline
 // ---------------------------
 const map = L.map('map').setView([20, 80], 2);
 
-// Add English OSM tiles
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors',
+// Light tiles from Carto
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>',
+    subdomains: 'abcd',
     maxZoom: 19
 }).addTo(map);
+
 
 // Timeline container
 const timeline = document.getElementById("location-list");
