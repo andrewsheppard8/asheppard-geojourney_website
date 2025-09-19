@@ -42,6 +42,51 @@ body {
     color: #ffffff;
 }
 
+/* Dropdown container */
+.site-nav .dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+/* Dropdown button (the Map link) */
+.site-nav .dropbtn {
+    text-decoration: none;
+    color: inherit;
+    padding: 0.5em;
+}
+
+/* Dropdown content (hidden by default) */
+.site-nav .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #1f1f1f; /* match header */
+    min-width: 160px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.7); /* subtle shadow for depth */
+    border: 1px solid #333; /* optional, matches header border */
+    border-radius: 4px;
+    z-index: 1001; /* above header */
+}
+
+/* Links inside dropdown */
+.site-nav .dropdown-content a {
+    display: block;
+    padding: 0.5em 1em;
+    color: #00bcd4; /* same as nav links */
+    text-decoration: none;
+    transition: background 0.3s, color 0.3s;
+}
+
+/* Hover effect for dropdown links */
+.site-nav .dropdown-content a:hover {
+    background-color: #2a2a2a; /* same as nav hover */
+    color: #ffffff;
+}
+
+/* Show the dropdown on hover */
+.site-nav .dropdown:hover .dropdown-content {
+    display: block;
+}
+
 /* ===== Hero Section ===== */
 .hero {
     background: linear-gradient(135deg, rgba(31,31,31,0.6), rgba(18,18,18,0.6)),
