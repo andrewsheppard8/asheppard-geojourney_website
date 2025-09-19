@@ -77,7 +77,9 @@
 
 <body>
   <div id="cesiumContainer"></div>
-  <div id="toolbar"><h3>Summits</h3></div>
+  <div id="toolbar">
+    <h3>Summits</h3>
+  </div>
   <div id="popup"></div>
 
   <script type="module">
@@ -114,13 +116,6 @@
         entity.polygon = undefined;
         entity.polyline = undefined;
 
-        // Add custom billboard
-        entity.billboard = new Cesium.BillboardGraphics({
-          image: "https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/svg/location-sharp.svg",
-          color: Cesium.Color.RED,
-          scale: 0.7
-        });
-
         // Popup info (click)
         entity.description = `<strong>${name}</strong><br>Date: ${date}<br>Rating: ${rating} / 5`;
 
@@ -146,9 +141,26 @@
         const pickedObject = viewer.scene.pick(click.position);
         if (Cesium.defined(pickedObject) && pickedObject.id) {
           const entity = pickedObject.id;
+
+          // Grab each property
+          const name = entity.properties.name.getValue();
+          const date = entity.properties.date.getValue();
+          const rating = entity.properties.rating.getValue();
+          const difficulty = entity.properties.difficulty.getValue();
+          const distance = entity.properties['distance (mi)'].getValue();
+          const crowds = entity.properties.crowds.getValue();
+
+          // Build popup content
           popup.style.left = click.position.x + 10 + 'px';
           popup.style.top = click.position.y + 10 + 'px';
-          popup.innerHTML = entity.description.getValue ? entity.description.getValue() : entity.description;
+          popup.innerHTML = `
+      <strong>${name}</strong><br>
+      Date: ${date}<br>
+      Rating: ${rating} / 5<br>
+      Difficulty: ${difficulty} / 10<br>
+      Distance: ${distance} mi<br>
+      Crowds: ${crowds}
+    `;
           popup.style.display = 'block';
         } else {
           popup.style.display = 'none';
@@ -166,4 +178,5 @@
     viewer.scene.globe.depthTestAgainstTerrain = true;
   </script>
 </body>
+
 </html>

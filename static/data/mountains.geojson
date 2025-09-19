@@ -10,7 +10,10 @@
       "properties": {
         "name": "Mount Everest",
         "date": "2024-05-20",
-        "rating": 5
+        "rating": 5,
+		"difficulty": 10,
+		"distance (mi)": 200,
+		"crowds": "Low"
       }
     },
     {
@@ -22,7 +25,10 @@
       "properties": {
         "name": "K2",
         "date": "2023-08-15",
-        "rating": 4
+        "rating": 4,
+		"difficulty": 10,
+		"distance (mi)": 200,
+		"crowds": "Low"
       }
     }
   ]
