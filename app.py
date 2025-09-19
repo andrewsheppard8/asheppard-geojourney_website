@@ -122,6 +122,10 @@ def get_coordinates(city_name):
             return jsonify({"coordinates": f"{coords[1]}, {coords[0]}"})
     return jsonify({"error": "City not found"}), 404
 
+@app.route("/terrain")
+def terrain():
+    return render_template("terrain.html")
+
 # -------------------------
 # Admin Login
 # -------------------------

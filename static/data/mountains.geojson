@@ -1,0 +1,29 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [86.925, 27.9881]
+      },
+      "properties": {
+        "name": "Mount Everest",
+        "date": "2024-05-20",
+        "rating": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [76.5133, 35.8818]
+      },
+      "properties": {
+        "name": "K2",
+        "date": "2023-08-15",
+        "rating": 4
+      }
+    }
+  ]
+}

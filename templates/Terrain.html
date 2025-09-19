@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>3D Mountains Globe</title>
+
+  <!-- Cesium CDN -->
+  <script src="https://cesium.com/downloads/cesiumjs/releases/1.133/Build/Cesium/Cesium.js"></script>
+  <link href="https://cesium.com/downloads/cesiumjs/releases/1.133/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+
+  <style>
+    html,
+    body,
+    #cesiumContainer {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    /* Toolbox sidebar */
+    #toolbar {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      width: 220px;
+      max-height: 90%;
+      overflow-y: auto;
+      background: rgba(30, 30, 30, 0.85);
+      padding: 10px;
+      border-radius: 8px;
+      font-family: sans-serif;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+    }
+
+    #toolbar h3 {
+      margin-top: 0;
+      margin-bottom: 8px;
+      color: #fff;
+      font-size: 16px;
+      text-align: center;
+    }
+
+    #toolbar button {
+      display: block;
+      width: 100%;
+      margin: 4px 0;
+      padding: 6px;
+      background: #444;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.2s;
+    }
+
+    #toolbar button:hover {
+      background: #666;
+    }
+
+    #popup {
+      position: absolute;
+      background: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      padding: 6px 8px;
+      border-radius: 4px;
+      pointer-events: none;
+      display: none;
+      font-family: sans-serif;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="cesiumContainer"></div>
+  <div id="toolbar"><h3>Summits</h3></div>
+  <div id="popup"></div>
+
+  <script type="module">
+    Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJmY2FmNGY3Yy04Njc5LTQxNGEtYjNlNi1kNTllMDAzNDMyNzkiLCJpZCI6MzQyOTg5LCJpYXQiOjE3NTgzMTg0Nzd9.djuPPuVjdx8CSbzNRIuAM7g-OzvMyfudddoUMaxhdEo';
+
+    const viewer = new Cesium.Viewer('cesiumContainer', {
+      terrain: Cesium.Terrain.fromWorldTerrain(),
+      infoBox: false,
+      selectionIndicator: false
+    });
+
+    // Initial camera view over Asia
+    viewer.camera.flyTo({
+      destination: Cesium.Cartesian3.fromDegrees(90.0, 30.0, 20000000)
+    });
+
+    const popup = document.getElementById('popup');
+
+    // Load GeoJSON summits
+    const geojsonUrl = '/static/data/mountains.geojson';
+    Cesium.GeoJsonDataSource.load(geojsonUrl, { clampToGround: true }).then(dataSource => {
+      viewer.dataSources.add(dataSource);
+
+      const entities = dataSource.entities.values;
+      const toolbar = document.getElementById('toolbar');
+
+      entities.forEach(entity => {
+        const name = entity.properties.name.getValue();
+        const date = entity.properties.date ? entity.properties.date.getValue() : 'Unknown';
+        const rating = entity.properties.rating ? entity.properties.rating.getValue() : 'N/A';
+
+        // Remove default GeoJSON symbol (blue box)
+        entity.point = undefined;
+        entity.polygon = undefined;
+        entity.polyline = undefined;
+
+        // Add custom billboard
+        entity.billboard = new Cesium.BillboardGraphics({
+          image: "https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/svg/location-sharp.svg",
+          color: Cesium.Color.RED,
+          scale: 0.7
+        });
+
+        // Popup info (click)
+        entity.description = `<strong>${name}</strong><br>Date: ${date}<br>Rating: ${rating} / 5`;
+
+        // Toolbar fly-to button
+        const btn = document.createElement('button');
+        btn.textContent = `${date} — ${name}`;
+        btn.onclick = () => {
+          viewer.flyTo(entity, {
+            duration: 2.0,
+            offset: new Cesium.HeadingPitchRange(
+              Cesium.Math.toRadians(0.0),
+              Cesium.Math.toRadians(-30.0),
+              20000
+            )
+          });
+        };
+        toolbar.appendChild(btn);
+      });
+
+      // Custom click popup handler
+      const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+      handler.setInputAction(function (click) {
+        const pickedObject = viewer.scene.pick(click.position);
+        if (Cesium.defined(pickedObject) && pickedObject.id) {
+          const entity = pickedObject.id;
+          popup.style.left = click.position.x + 10 + 'px';
+          popup.style.top = click.position.y + 10 + 'px';
+          popup.innerHTML = entity.description.getValue ? entity.description.getValue() : entity.description;
+          popup.style.display = 'block';
+        } else {
+          popup.style.display = 'none';
+        }
+      }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+    });
+
+    // Optional: OSM 3D buildings
+    (async () => {
+      const buildingTileset = await Cesium.createOsmBuildingsAsync();
+      viewer.scene.primitives.add(buildingTileset);
+    })();
+
+    viewer.scene.globe.enableLighting = false;
+    viewer.scene.globe.depthTestAgainstTerrain = true;
+  </script>
+</body>
+</html>
