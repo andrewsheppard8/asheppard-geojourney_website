@@ -383,12 +383,20 @@ def download_all():
     zip_buffer = io.BytesIO()
 
     # Create a zip archive in the buffer
-    with zipfile.ZipFile(zip_buffer, "w") as zip_file:
-        # Add files to the zip
+    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+        # Add database files
         zip_file.write("db/pictures.db", arcname="pictures.db")
         zip_file.write("db/blog.db", arcname="blog.db")
         zip_file.write("static/data/cities.geojson", arcname="cities.geojson")
-    
+        
+        # Add the entire images folder
+        for root, dirs, files in os.walk("static/images"):
+            for file in files:
+                file_path = os.path.join(root, file)
+                # Preserve folder structure inside the zip
+                arcname = os.path.relpath(file_path, start="static")
+                zip_file.write(file_path, arcname=arcname)
+
     # Make sure the buffer’s pointer is at the start
     zip_buffer.seek(0)
 
@@ -396,7 +404,6 @@ def download_all():
     date_str = datetime.now().strftime("%Y-%m-%d")
     zip_filename = f"databases_{date_str}.zip"
 
-    # Return the zip as a downloadable attachment
     return send_file(
         zip_buffer,
         as_attachment=True,

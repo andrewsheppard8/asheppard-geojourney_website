@@ -4,9 +4,9 @@
 
 {% block content %}
 <section class="pictures-page">
-    <h1>Travel Pictures</h1>
+  <h1>Travel Pictures</h1>
 
-    <!-- Sort toggle
+  <!-- Sort toggle
     <p class="sort-toggle">
         Sort order: 
         {% if current_order == 'desc' %}
@@ -17,44 +17,43 @@
         | <a href="{{ url_for('pictures', order=toggle_order) }}" class="btn-secondary-small">Toggle</a>
     </p> -->
 
-    <!-- Gallery -->
-    <div class="gallery">
-      {% for pic in pictures %}
-      <div class="gallery-item">
-        <!-- Image -->
-        <div class="gallery-image">
-          <img src="{{ url_for('static', filename='images/' ~ pic['filename']) }}"
-               alt="{{ pic['title'] }}"
-               onclick="openModal(this)">
-        </div>
-
-        <!-- Text -->
-        <div class="gallery-text">
-          <h3>{{ pic['title'] }}</h3>
-          <p>{{ pic['description'] }}</p>
-          <p><strong>Date:</strong> {{ pic['formatted_date'] }}</p>
-        </div>
+  <!-- Gallery -->
+  <div class="gallery">
+    {% for pic in pictures %}
+    <div class="gallery-item">
+      <!-- Image -->
+      <div class="gallery-image">
+        <img src="{{ url_for('static', filename='images/' ~ pic['filename']) }}" alt="{{ pic['title'] }}"
+          onclick="openModal(this)">
       </div>
-      {% endfor %}
+
+      <!-- Text -->
+      <div class="gallery-text">
+        <h3>{{ pic['title'] }}</h3>
+        <p>{{ pic['description'] }}</p>
+        <p><strong>Date:</strong> {{ pic['formatted_date'] }}</p>
+      </div>
     </div>
+    {% endfor %}
+  </div>
 </section>
 
 <!-- Modal for click-to-enlarge -->
 <div id="modal" class="modal" onclick="closeModal()">
-    <span class="close">&times;</span>
-    <img class="modal-content" id="modal-img">
-    <div id="caption"></div>
+  <span class="close">&times;</span>
+  <img class="modal-content" id="modal-img">
+  <div id="caption"></div>
 </div>
 
 <script>
-function openModal(img) {
+  function openModal(img) {
     document.getElementById("modal").style.display = "block";
     document.getElementById("modal-img").src = img.src;
     document.getElementById("caption").innerText = img.alt;
-}
+  }
 
-function closeModal() {
+  function closeModal() {
     document.getElementById("modal").style.display = "none";
-}
+  }
 </script>
 {% endblock %}
