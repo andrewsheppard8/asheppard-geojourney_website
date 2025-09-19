@@ -7,3 +7,5 @@ OK, this has quickly taken on a mind of its own. It now has multiple pages, link
 geojson==3.2.0
 
 git pull origin main --rebase
+
+pip freeze > requirements.txt
