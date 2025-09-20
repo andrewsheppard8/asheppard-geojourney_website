@@ -51,7 +51,7 @@ body {
 /* Dropdown button (the Map link) */
 .site-nav .dropbtn {
     text-decoration: none;
-    color: inherit;
+    color: #00bcd4; /* same as nav links */
     padding: 0.5em;
 }
 
@@ -238,6 +238,18 @@ body {
     gap: 20px;
     flex-wrap: wrap;
     justify-content: center;
+}
+
+.city-label {
+    background-color: rgba(255, 255, 255, 0.5); 
+    color: #222;                               
+    font-weight: 500;                            
+    font-size: 0.75rem;                          
+    padding: 2px 5px;                            
+    border-radius: 7px;                         
+    border: 1px solid rgba(200, 200, 200, 0.4); 
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15); 
+    white-space: nowrap;
 }
 
 #timeline {

@@ -57,6 +57,25 @@
         "distance (mi)": 20.0,
         "crowds": "Very High"
       }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -112.096279,
+          36.098041
+        ]
+      },
+      "properties": {
+        "name": "Grand Canyon",
+        "elevation (m)": 0.0,
+        "date": "2025-06-18",
+        "rating": 4,
+        "difficulty": 2,
+        "distance (mi)": 0.0,
+        "crowds": "Very High"
+      }
     }
   ]
 }

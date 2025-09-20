@@ -13,7 +13,6 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     maxZoom: 19
 }).addTo(map);
 
-
 // Timeline container
 const timeline = document.getElementById("location-list");
 
@@ -32,14 +31,10 @@ fetch("/static/data/cities.geojson")
             return dateA - dateB;
         });
 
-        // ---------------------------
         // Initialize marker cluster group
-        // ---------------------------
         const markerCluster = L.markerClusterGroup();
 
-        // ---------------------------
-        // Add markers to cluster instead of directly to map
-        // ---------------------------
+        // Add markers to cluster
         geojsonData.features.forEach((feature, i) => {
             const coords = feature.geometry.coordinates;
             const cityName = feature.properties.city || "Unknown";
@@ -51,43 +46,24 @@ fetch("/static/data/cities.geojson")
             }) : "";
 
             const marker = L.marker([coords[1], coords[0]], { opacity: 0.8 })
-                .bindPopup(`<b>${cityName}</b><br>${formattedDate}`);
+                .bindPopup(`<b>${cityName}</b><br>${formattedDate}`)
+                .bindTooltip(cityName, {
+                    permanent: true,
+                    direction: "top",
+                    className: "city-label"
+                });
 
             markerCluster.addLayer(marker);
             markers.push({ feature, layer: marker });
         });
 
-        // Add the cluster group to the map
+        // Add cluster to map
         map.addLayer(markerCluster);
 
         // Auto-zoom to bounds
         if (markerCluster.getBounds().isValid()) {
             map.fitBounds(markerCluster.getBounds().pad(0.2));
         }
-
-        // Add markers
-        //   geojsonData.features.forEach((feature, i) => {
-        //       const coords = feature.geometry.coordinates;
-        //       const cityName = feature.properties.city || "Unknown";
-        //       const dateStr = feature.properties.date || "";
-        //       const formattedDate = dateStr ? new Date(dateStr).toLocaleDateString('en-US', {
-        //           year: 'numeric',
-        //           month: 'long',
-        //           day: 'numeric'
-        //       }) : "";
-
-        //       const marker = L.marker([coords[1], coords[0]], {opacity:0.8})
-        //                       .addTo(map)
-        //                       .bindPopup(`<b>${cityName}</b><br>${formattedDate}`);
-
-        //       markers.push({feature, layer: marker});
-        //   });
-
-        //   // Auto-zoom to bounds
-        //   const allMarkers = L.featureGroup(markers.map(m => m.layer));
-        //   if (allMarkers.getBounds().isValid()) {
-        //       map.fitBounds(allMarkers.getBounds().pad(0.2));
-        //   }
 
         // ---------------------------
         // Build interactive timeline
@@ -106,13 +82,12 @@ fetch("/static/data/cities.geojson")
             li.style.borderRadius = "4px";
             li.style.marginBottom = "2px";
 
-            // Click: highlight and open popup
+            // Click: highlight, open popup, zoom
             li.addEventListener("click", () => {
-                // Remove active from others
                 document.querySelectorAll("#location-list li").forEach(item => item.classList.remove("active"));
                 li.classList.add("active");
 
-                // Open popup
+                map.setView(m.layer.getLatLng(), 12);
                 m.layer.openPopup();
             });
 
@@ -128,8 +103,35 @@ fetch("/static/data/cities.geojson")
 
             timeline.appendChild(li);
         });
-    })
 
+        // ---------------------------
+        // Zoom-dependent labels
+        // ---------------------------
+        const minZoomForLabels = 6; // labels appear at this zoom or above
+
+        function updateLabels() {
+            const currentZoom = map.getZoom();
+            markers.forEach(m => {
+                const tooltipEl = m.layer.getTooltip()?.getElement();
+                if (!tooltipEl) return;
+
+                if (currentZoom >= minZoomForLabels) {
+                    tooltipEl.style.display = "block";
+
+                    // Optional: scale font with zoom
+                    const fontSize = 0.6 + (currentZoom - minZoomForLabels) * 0.05;
+                    tooltipEl.style.fontSize = fontSize + "rem";
+
+                } else {
+                    tooltipEl.style.display = "none";
+                }
+            });
+        }
+
+        // Initialize and attach to zoom event
+        updateLabels();
+        map.on("zoomend", updateLabels);
+    })
     .catch(err => console.error("Error loading GeoJSON:", err));
 
 // ---------------------------
