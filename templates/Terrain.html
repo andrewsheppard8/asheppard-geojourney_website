@@ -19,7 +19,7 @@
 
   const viewer = new Cesium.Viewer('cesiumContainer', {
     terrain: Cesium.Terrain.fromWorldTerrain(),
-    infoBox: false,
+    infoBox: true,
     selectionIndicator: false
   });
 
@@ -65,7 +65,7 @@
 
     // Custom click popup
     const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
-    handler.setInputAction(function(click) {
+    handler.setInputAction(function (click) {
       const pickedObject = viewer.scene.pick(click.position);
       if (Cesium.defined(pickedObject) && pickedObject.id) {
         const entity = pickedObject.id;
@@ -78,13 +78,16 @@
 
         popup.style.left = click.position.x + 10 + 'px';
         popup.style.top = click.position.y + 10 + 'px';
+        // popup.innerHTML = `
+        //   <strong>${name}</strong><br>
+        //   Date: ${date}<br>
+        //   Rating: ${rating} / 5<br>
+        //   Difficulty: ${difficulty} / 10<br>
+        //   Distance: ${distance} mi<br>
+        //   Crowds: ${crowds}
+        // `;
         popup.innerHTML = `
           <strong>${name}</strong><br>
-          Date: ${date}<br>
-          Rating: ${rating} / 5<br>
-          Difficulty: ${difficulty} / 10<br>
-          Distance: ${distance} mi<br>
-          Crowds: ${crowds}
         `;
         popup.style.display = 'block';
       } else {

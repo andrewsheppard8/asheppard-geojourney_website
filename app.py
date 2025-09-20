@@ -378,6 +378,87 @@ def admin_geojson():
     return render_template("admin_geojson.html", features=data.get("features", []))
 
 # -------------------------
+# Admin Routes: Terrain (Cesium)
+# -------------------------
+@app.route("/admin/terrain", methods=["GET", "POST"])
+@requires_auth
+def admin_terrain():
+    """
+    Admin page for managing the mountains.geojson file.
+    Allows add/edit/delete of mountain summit features.
+    """
+    geojson_path = os.path.join(BASE_DIR, "static", "data", "mountains.geojson")
+
+    # Load
+    if os.path.exists(geojson_path):
+        with open(geojson_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    else:
+        data = {"type": "FeatureCollection", "features": []}
+
+    if request.method == "POST":
+        updated_features = []
+
+        # Update existing
+        for i, feature in enumerate(data.get("features", [])):
+            if request.form.get(f"delete_{i}") == "on":
+                continue
+
+            props = feature.get("properties", {})
+            props["name"] = request.form.get(f"name_{i}", props.get("name", ""))
+            props["crowds"] = request.form.get(f"crowds_{i}", props.get("crowds", ""))
+            props["date"] = request.form.get(f"date_{i}", props.get("date", ""))
+            props["rating"] = int(request.form.get(f"rating_{i}", props.get("rating", 0)))
+            props["difficulty"] = int(request.form.get(f"difficulty_{i}", props.get("difficulty", 0)))
+            props["distance (mi)"] = float(request.form.get(f"distance_{i}", props.get("distance (mi)", 0)))
+            props["elevation (m)"] = float(request.form.get(f"elevation_{i}", props.get("elevation (m)", 0)))
+
+            try:
+                lat = float(request.form.get(f"lat_{i}", feature["geometry"]["coordinates"][1]))
+                lng = float(request.form.get(f"lng_{i}", feature["geometry"]["coordinates"][0]))
+                feature["geometry"]["coordinates"] = [lng, lat]
+            except (TypeError, ValueError):
+                pass
+
+            feature["properties"] = props
+            updated_features.append(feature)
+
+        data["features"] = updated_features
+
+        # Add new
+        new_name = request.form.get("new_name")
+        new_lat = request.form.get("new_lat")
+        new_lng = request.form.get("new_lng")
+        new_elev = request.form.get("new_elevation")
+
+        if new_name and new_lat and new_lng:
+            try:
+                lat = float(new_lat)
+                lng = float(new_lng)
+                elev = float(new_elev) if new_elev else 0
+                new_feature = {
+                    "type": "Feature",
+                    "geometry": {"type": "Point", "coordinates": [lng, lat]},
+                    "properties": {
+                        "name": new_name,
+                        "elevation (m)": elev,
+                        "date": request.form.get("new_date", ""),
+                        "rating": int(request.form.get("new_rating", 0)),
+                        "difficulty": int(request.form.get("new_difficulty", 0)),
+                        "distance (mi)": float(request.form.get("new_distance", 0)),
+                        "crowds": request.form.get("new_crowds", "")
+                    }
+                }
+                data["features"].append(new_feature)
+            except ValueError:
+                pass
+
+        # Save back to file
+        with open(geojson_path, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2)
+
+    return render_template("admin_terrain.html", features=data.get("features", []))
+# -------------------------
 # Downloading the databases
 # -------------------------
 @app.route("/download")

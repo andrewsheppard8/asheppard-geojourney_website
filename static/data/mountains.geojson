@@ -5,30 +5,57 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [86.925, 27.9881]
+        "coordinates": [
+          -117.646338,
+          34.288679
+        ]
       },
       "properties": {
-        "name": "Mount Everest",
-        "date": "2024-05-20",
-        "rating": 5,
-		"difficulty": 10,
-		"distance (mi)": 200,
-		"crowds": "High"
+        "name": "Mt. Baldy (Mt. San Antonio)",
+        "elevation (m)": 3067.0,
+        "date": "2025-09-11",
+        "rating": 4,
+        "difficulty": 5,
+        "distance (mi)": 12.0,
+        "crowds": "Very High"
       }
     },
     {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [76.5133, 35.8818]
+        "coordinates": [
+          -116.825321,
+          34.098493
+        ]
       },
       "properties": {
-        "name": "K2",
-        "date": "2023-08-15",
+        "name": "Mount San Gorgonio",
+        "elevation (m)": 3506.0,
+        "date": "2025-02-15",
+        "rating": 5,
+        "difficulty": 7,
+        "distance (mi)": 20.0,
+        "crowds": "Medium"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          138.730781,
+          35.362799
+        ]
+      },
+      "properties": {
+        "name": "Mount Fuji",
+        "elevation (m)": 3776.0,
+        "date": "2009-04-21",
         "rating": 4,
-		"difficulty": 10,
-		"distance (mi)": 200,
-		"crowds": "Low"
+        "difficulty": 6,
+        "distance (mi)": 20.0,
+        "crowds": "Very High"
       }
     }
   ]

@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Mountains{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+    <h1>Manage Mountain Summits</h1>
+
+    <form method="POST" id="geojson-form">
+
+        <!-- ------------------------- -->
+        <!-- Map & Geocoding Search -->
+        <!-- ------------------------- -->
+        <h2>Leaflet Map (Drag markers or click to add new summits)</h2>
+        <div id="geocode-search" style="margin-bottom:10px;">
+            <input type="text" id="address-input" placeholder="Enter location" style="width:70%; padding:5px;">
+            <button type="button" id="geocode-btn" style="padding:6px 12px;">Locate</button>
+        </div>
+        <div id="map"></div>
+
+        <!-- ------------------------- -->
+        <!-- Add New Summit -->
+        <!-- ------------------------- -->
+        <h2>Add New Summit</h2>
+        <label>Latitude:<br><input type="number" step="any" name="new_lat" id="new_lat"></label><br><br>
+        <label>Longitude:<br><input type="number" step="any" name="new_lng" id="new_lng"></label><br><br>
+        <label>Name:<br><input type="text" name="new_name" id="new_name" style="width:50%;"></label><br><br>
+        <label>Date:<br><input type="date" name="new_date" id="new_date"></label><br><br>
+        <label>Elevation (m):<br><input type="number" step="any" name="new_elevation"
+                id="new_elevation"></label><br><br>
+        <label>Rating:<br><input type="number" min="0" max="5" name="new_rating" id="new_rating"></label><br><br>
+        <label>Difficulty:<br><input type="number" min="0" max="10" name="new_difficulty"
+                id="new_difficulty"></label><br><br>
+        <label>Distance (mi):<br><input type="number" step="any" name="new_distance" id="new_distance"></label><br><br>
+        <label>Crowds:<br><input type="text" name="new_crowds" id="new_crowds"></label><br><br>
+
+        <!-- ------------------------- -->
+        <!-- Existing Summits -->
+        <!-- ------------------------- -->
+        <h2>Existing Summits</h2>
+        {% for feature in features %}
+        <div style="border:1px solid #ccc; padding:10px; margin-bottom:15px; border-radius:6px;">
+            <h3>Feature {{ loop.index }}</h3>
+            <label>Name:<br><input type="text" name="name_{{ loop.index0 }}"
+                    value="{{ feature['properties'].get('name','') }}" style="width:50%;"></label><br><br>
+            <label>Date:<br><input type="date" name="date_{{ loop.index0 }}"
+                    value="{{ feature['properties'].get('date','') }}"></label><br><br>
+            <label>Elevation (m):<br><input type="number" step="any" name="elevation_{{ loop.index0 }}"
+                    value="{{ feature['properties'].get('elevation (m)', 0) }}"></label><br><br>
+            <label>Rating:<br><input type="number" min="0" max="5" name="rating_{{ loop.index0 }}"
+                    value="{{ feature['properties'].get('rating',0) }}"></label><br><br>
+            <label>Difficulty:<br><input type="number" min="0" max="10" name="difficulty_{{ loop.index0 }}"
+                    value="{{ feature['properties'].get('difficulty',0) }}"></label><br><br>
+            <label>Distance (mi):<br><input type="number" step="any" name="distance_{{ loop.index0 }}"
+                    value="{{ feature['properties'].get('distance (mi)',0) }}"></label><br><br>
+            <label>Crowds:<br><input type="text" name="crowds_{{ loop.index0 }}"
+                    value="{{ feature['properties'].get('crowds','') }}"></label><br><br>
+            <label><input type="checkbox" name="delete_{{ loop.index0 }}"> Delete this summit</label><br><br>
+            <input type="hidden" name="lat_{{ loop.index0 }}" value="{{ feature['geometry']['coordinates'][1] }}">
+            <input type="hidden" name="lng_{{ loop.index0 }}" value="{{ feature['geometry']['coordinates'][0] }}">
+        </div>
+        {% endfor %}
+
+        <button type="submit" style="margin-top:15px; padding:12px 20px; font-size:1.1em;">Save Changes</button>
+    </form>
+</div>
+
+<!-- ------------------------- -->
+<!-- Leaflet CSS/JS -->
+<!-- ------------------------- -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<!-- ------------------------- -->
+<!-- Pass GeoJSON from Flask -->
+<!-- ------------------------- -->
+<script>
+    window.geojsonFeatures = {{ features | tojson | safe }};
+</script>
+
+<!-- ------------------------- -->
+<!-- Admin Map JS -->
+<!-- ------------------------- -->
+<script src="{{ url_for('static', filename='js/terrain_map.js') }}"></script>
+
+<style>
+    #map {
+        width: 100%;
+        height: 600px;
+        min-height: 400px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+    }
+
+    #geocode-search input {
+        max-width: 70%;
+    }
+
+    #geocode-search button {
+        margin-left: 10px;
+    }
+</style>
+
+{% endblock %}
