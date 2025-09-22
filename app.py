@@ -26,20 +26,41 @@ app.secret_key = os.getenv("SECRET_KEY", "fallback-secret")
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+# -------------------------
+# Persistent directory
+# -------------------------
 if os.path.exists("/var/data"):
     PERSISTENT_DIR = "/var/data"
 else:
     PERSISTENT_DIR = os.path.join(BASE_DIR, "data")
 
+os.makedirs(PERSISTENT_DIR, exist_ok=True)
 
+# -------------------------
+# Database paths
+# -------------------------
 DB_NAME = os.path.join(PERSISTENT_DIR, "pictures.db")
 BLOG_DB = os.path.join(PERSISTENT_DIR, "blog.db")
+
+# Create empty DB files if missing
+for db_file in [DB_NAME, BLOG_DB]:
+    if not os.path.exists(db_file):
+        open(db_file, "a").close()
+
+# -------------------------
+# Images folder
+# -------------------------
 IMAGE_FOLDER = os.path.join(PERSISTENT_DIR, "images")
 os.makedirs(IMAGE_FOLDER, exist_ok=True)
 
 # GeoJSON files (persistent)
 CITIES_GEOJSON = os.path.join(PERSISTENT_DIR, "cities.geojson")
 MOUNTAINS_GEOJSON = os.path.join(PERSISTENT_DIR, "mountains.geojson")
+
+for geojson_path in [CITIES_GEOJSON, MOUNTAINS_GEOJSON]:
+    if not os.path.exists(geojson_path):
+        with open(geojson_path, "w", encoding="utf-8") as f:
+            json.dump({"type": "FeatureCollection", "features": []}, f, indent=2)
 
 # -------------------------
 # Database Connection Helpers
@@ -56,14 +77,20 @@ def get_blog_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
-# -------------------------
-# Load GeoJSON for Map
-# -------------------------
-with open(CITIES_GEOJSON, "r", encoding="utf-8") as f:
-    cities_data = json.load(f)
+# -------------------------------
+# Load GeoJSON safely
+# -------------------------------
+def load_geojson(path):
+    if os.path.exists(path):
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except json.JSONDecodeError:
+            print(f"Warning: Could not decode JSON in {path}")
+    return {"type": "FeatureCollection", "features": []}
 
-with open(MOUNTAINS_GEOJSON, "r", encoding="utf-8") as f:
-    mountains_data = json.load(f)
+cities_data = load_geojson(CITIES_GEOJSON)
+mountains_data = load_geojson(MOUNTAINS_GEOJSON)
 
 # Serve GeoJSON files from the persistent disk folder.
 # This allows Flask to dynamically serve files from /var/data (PERSISTENT_DIR),
