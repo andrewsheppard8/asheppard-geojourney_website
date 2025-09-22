@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Food Map</title>
+
+    <!-- Mapbox CSS -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.20.0/mapbox-gl.css" rel="stylesheet">
+    <!-- Your CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/food_map.css') }}">
+</head>
+<body>
+    <h1>Food Map</h1>
+    <div id="map"></div>
+
+    <!-- Mapbox JS -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.20.0/mapbox-gl.js"></script>
+    <!-- Your JS -->
+    <script src="{{ url_for('static', filename='js/food_map.js') }}"></script>
+</body>
+</html>

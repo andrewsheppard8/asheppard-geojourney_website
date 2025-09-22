@@ -20,13 +20,25 @@ app.secret_key = os.getenv("SECRET_KEY", "fallback-secret")
 # -------------------------
 # Paths and Folders
 # -------------------------
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_NAME = os.path.join(BASE_DIR, "db", "pictures.db")
-IMAGE_FOLDER = os.path.join(BASE_DIR, "static", "images")
-os.makedirs(IMAGE_FOLDER, exist_ok=True)  # ensure folder exists
 
-BLOG_DB = os.path.join(BASE_DIR, "db", "blog.db")
-GEOJSON_PATH = os.path.join(BASE_DIR, "static", "data", "cities.geojson")
+# Use persistent disk location if available
+# Use /var/data if it exists (Render persistent disk), otherwise use ./db locally
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+if os.path.exists("/var/data"):
+    PERSISTENT_DIR = "/var/data"
+else:
+    PERSISTENT_DIR = os.path.join(BASE_DIR, "db")
+
+DB_NAME = os.path.join(PERSISTENT_DIR, "pictures.db")
+BLOG_DB = os.path.join(PERSISTENT_DIR, "blog.db")
+IMAGE_FOLDER = os.path.join(PERSISTENT_DIR, "images")
+os.makedirs(IMAGE_FOLDER, exist_ok=True)
+
+# GeoJSON files (persistent)
+CITIES_GEOJSON = os.path.join(PERSISTENT_DIR, "cities.geojson")
+MOUNTAINS_GEOJSON = os.path.join(PERSISTENT_DIR, "mountains.geojson")
 
 # -------------------------
 # Database Connection Helpers
@@ -46,12 +58,11 @@ def get_blog_connection():
 # -------------------------
 # Load GeoJSON for Map
 # -------------------------
-with open(GEOJSON_PATH, "r", encoding="utf-8") as f:
-    geo_data = json.load(f)
+with open(CITIES_GEOJSON, "r", encoding="utf-8") as f:
+    cities_data = json.load(f)
 
-# Optional: print city names for verification
-for feat in geo_data.get("features", []):
-    print(feat.get("properties", {}).get("city"))
+with open(MOUNTAINS_GEOJSON, "r", encoding="utf-8") as f:
+    mountains_data = json.load(f)
 
 # -------------------------
 # Template Filters
@@ -112,19 +123,23 @@ def blog():
     conn.close()
     return render_template("blog.html", posts=posts)
 
-@app.route("/get_coordinates/<city_name>")
-def get_coordinates(city_name):
-    """Return coordinates of a city from GeoJSON."""
-    city_name = city_name.lower()
-    for feat in geo_data.get("features", []):
-        if feat.get("properties", {}).get("city", "").lower() == city_name:
-            coords = feat["geometry"]["coordinates"]
-            return jsonify({"coordinates": f"{coords[1]}, {coords[0]}"})
-    return jsonify({"error": "City not found"}), 404
+# @app.route("/get_coordinates/<city_name>")
+# def get_coordinates(city_name):
+#     """Return coordinates of a city from GeoJSON."""
+#     city_name = city_name.lower()
+#     for feat in geo_data.get("features", []):
+#         if feat.get("properties", {}).get("city", "").lower() == city_name:
+#             coords = feat["geometry"]["coordinates"]
+#             return jsonify({"coordinates": f"{coords[1]}, {coords[0]}"})
+#     return jsonify({"error": "City not found"}), 404
 
 @app.route("/terrain")
 def terrain():
     return render_template("terrain.html")
+
+@app.route('/food-map')
+def food_map():
+    return render_template('food_map.html')
 
 # -------------------------
 # Admin Login
@@ -301,7 +316,7 @@ def admin_geojson():
       - Deleting features
       - Adding new features with coordinates
     """
-    geojson_path = os.path.join(BASE_DIR, "static", "data", "cities.geojson")
+    geojson_path = CITIES_GEOJSON  # <-- use persistent file
 
     # -------------------
     # Load existing GeoJSON
@@ -387,7 +402,7 @@ def admin_terrain():
     Admin page for managing the mountains.geojson file.
     Allows add/edit/delete of mountain summit features.
     """
-    geojson_path = os.path.join(BASE_DIR, "static", "data", "mountains.geojson")
+    geojson_path = MOUNTAINS_GEOJSON
 
     # Load
     if os.path.exists(geojson_path):
@@ -469,13 +484,9 @@ def download_all():
 
     # Create a zip archive in the buffer
     with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
-        # Add database files
-        zip_file.write("db/pictures.db", arcname="pictures.db")
-        zip_file.write("db/blog.db", arcname="blog.db")
-        zip_file.write("static/data/cities.geojson", arcname="cities.geojson")
         
-        # Add the entire images folder
-        for root, dirs, files in os.walk("static/images"):
+        # Add the entire data folder
+        for root, dirs, files in os.walk(PERSISTENT_DIR):
             for file in files:
                 file_path = os.path.join(root, file)
                 # Preserve folder structure inside the zip
