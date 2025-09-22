@@ -342,6 +342,42 @@ def delete_picture(pic_id):
     return redirect(url_for("admin_pictures"))
 
 # -------------------------
+# Admin Routes: Rotate Pictures
+# -------------------------
+@app.route("/admin/pictures/rotate/<int:pic_id>/<int:degrees>", methods=["POST"])
+@requires_auth
+def rotate_picture(pic_id, degrees):
+    """Rotate a picture by a given number of degrees."""
+    conn = get_db_connection()
+    pic = conn.execute("SELECT filename FROM pictures WHERE id = ?", (pic_id,)).fetchone()
+    conn.close()
+
+    if not pic:
+        flash("Picture not found!")
+        return redirect(url_for("admin_pictures"))
+
+    file_path = os.path.join(IMAGE_FOLDER, pic["filename"])
+    if not os.path.exists(file_path):
+        flash("File not found on disk!")
+        return redirect(url_for("admin_pictures"))
+
+    try:
+        with Image.open(file_path) as img:
+            # Apply rotation (degrees clockwise)
+            img = img.rotate(-degrees, expand=True)  # PIL rotates counter-clockwise, so we invert
+            # Preserve format
+            if img.mode in ("RGBA", "LA") or (img.mode == "P" and "transparency" in img.info):
+                img.save(file_path, optimize=True)
+            else:
+                img = img.convert("RGB")
+                img.save(file_path, format="JPEG", quality=85, optimize=True)
+        flash(f"Rotated picture by {degrees}° successfully!")
+    except Exception as e:
+        flash(f"Failed to rotate picture: {e}")
+
+    return redirect(url_for("admin_pictures"))
+
+# -------------------------
 # Admin Routes: Map_View
 # -------------------------
 @app.route("/admin/geojson", methods=["GET", "POST"])
@@ -617,9 +653,6 @@ def image_space():
     <p>Estimated additional images you can add: {est_additional_images}</p>
     """
 
-# -------------------------
-# Optimizing image size
-# -------------------------
 @app.route("/image_optimize")
 @requires_auth
 def image_optimize():
@@ -635,6 +668,22 @@ def image_optimize():
         try:
             with Image.open(file_path) as img:
                 original_size = os.path.getsize(file_path)
+
+                # Apply EXIF orientation if present, then remove EXIF orientation tag
+                try:
+                    exif = img.getexif()
+                    orientation = exif.get(274)  # 274 is the EXIF orientation tag
+                    if orientation == 3:
+                        img = img.rotate(180, expand=True)
+                    elif orientation == 6:
+                        img = img.rotate(270, expand=True)
+                    elif orientation == 8:
+                        img = img.rotate(90, expand=True)
+                    # Remove orientation to prevent re-rotation
+                    if exif is not None:
+                        exif[274] = 1
+                except Exception:
+                    pass  # No EXIF or cannot read it
 
                 # Resize if larger than 1920px width or height
                 max_dim = 1920
