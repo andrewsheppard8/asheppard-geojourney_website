@@ -3,6 +3,7 @@ import os
 import io
 import zipfile
 import json
+from PIL import Image
 from functools import wraps
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Response, send_file, send_from_directory
 from datetime import datetime
@@ -615,6 +616,55 @@ def image_space():
     <p>Remaining space: {remaining_mb:.2f} MB</p>
     <p>Estimated additional images you can add: {est_additional_images}</p>
     """
+
+# -------------------------
+# Optimizing image size
+# -------------------------
+@app.route("/image_optimize")
+@requires_auth
+def optimize_images():
+    """
+    Optimize all images in IMAGE_FOLDER in place.
+    Returns a summary JSON.
+    """
+    summary = {"processed": 0, "original_size_MB": 0, "optimized_size_MB": 0}
+
+    for filename in os.listdir(IMAGE_FOLDER):
+        if not filename.lower().endswith((".jpg", ".jpeg", ".png")):
+            continue
+
+        file_path = os.path.join(IMAGE_FOLDER, filename)
+
+        try:
+            original_size = os.path.getsize(file_path) / (1024 * 1024)
+
+            # Open image
+            with Image.open(file_path) as img:
+                # Resize if wider than 1920px
+                max_width = 1920
+                if img.width > max_width:
+                    ratio = max_width / img.width
+                    new_size = (max_width, int(img.height * ratio))
+                    img = img.resize(new_size, Image.ANTIALIAS)
+
+                # Save optimized image, overwrite original
+                img.save(file_path, optimize=True, quality=85)
+
+            optimized_size = os.path.getsize(file_path) / (1024 * 1024)
+
+            summary["processed"] += 1
+            summary["original_size_MB"] += original_size
+            summary["optimized_size_MB"] += optimized_size
+
+        except Exception as e:
+            print(f"Error optimizing {filename}: {e}")
+            continue
+
+    # Round sizes
+    summary["original_size_MB"] = round(summary["original_size_MB"], 2)
+    summary["optimized_size_MB"] = round(summary["optimized_size_MB"], 2)
+
+    return jsonify(summary)
 
 # -------------------------
 # Run the Flask App
