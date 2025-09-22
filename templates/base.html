@@ -14,6 +14,7 @@
     <meta charset="UTF-8">
     <title>{% block title %}Andrew Sheppard Geojourney{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/site_updates.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
         integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
@@ -30,11 +31,13 @@
                 <div class="dropdown-content">
                     <a href="{{ url_for('map_view') }}">Places Visited</a>
                     <a href="{{ url_for('terrain') }}">3D Peaks</a>
+                    <a href="{{ url_for('food_map') }}">Food Map</a>
                 </div>
             </div>
 
             <a href="{{ url_for('pictures') }}">Pictures</a>
-            <a href="{{ url_for('blog') }}">Blog</a>
+            <a href="{{ url_for('blog') }}">Travel Blog</a>
+            </div>
         </nav>
     </header>
 

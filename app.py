@@ -1,4 +1,5 @@
 import sqlite3
+import markdown
 import os
 import io
 import zipfile
@@ -35,6 +36,8 @@ if os.path.exists("/var/data"):
 else:
     PERSISTENT_DIR = os.path.join(BASE_DIR, "data")
 
+# Normalize path (makes sure slashes are correct for OS)
+PERSISTENT_DIR = os.path.abspath(PERSISTENT_DIR)
 os.makedirs(PERSISTENT_DIR, exist_ok=True)
 
 print(f"PERSISTENT_DIR is: {PERSISTENT_DIR}")
@@ -45,9 +48,11 @@ print("Contents of PERSISTENT_DIR:", os.listdir(PERSISTENT_DIR))
 # -------------------------
 DB_NAME = os.path.join(PERSISTENT_DIR, "pictures.db")
 BLOG_DB = os.path.join(PERSISTENT_DIR, "blog.db")
+FOOD_DB = os.path.join(PERSISTENT_DIR, "food_map.db")
+# UPDATES_DB = os.path.join(PERSISTENT_DIR, "site_updates.db")
 
 # Create empty DB files if missing
-for db_file in [DB_NAME, BLOG_DB]:
+for db_file in [DB_NAME, BLOG_DB,FOOD_DB]:
     if not os.path.exists(db_file):
         open(db_file, "a").close()
 
@@ -81,6 +86,17 @@ def get_blog_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
+# def get_updates_connection():
+#     """Return a connection to site_updates.db with row access as dict."""
+#     conn = sqlite3.connect(UPDATES_DB)
+#     conn.row_factory = sqlite3.Row
+#     return conn
+
+def get_FOOD_connection():
+    """Return a connection to blog.db with row access as dict."""
+    conn = sqlite3.connect(FOOD_DB)
+    conn.row_factory = sqlite3.Row
+    return conn
 # -------------------------------
 # Load GeoJSON safely
 # -------------------------------
@@ -161,6 +177,23 @@ def blog():
     conn.close()
     return render_template("blog.html", posts=posts)
 
+# @app.route("/site_updates")
+# def site_updates():
+#     """Public site updates page."""
+#     conn = get_updates_connection()
+#     posts = conn.execute("SELECT * FROM posts ORDER BY date DESC").fetchall()
+#     conn.close()
+
+#     # Convert Markdown description to HTML
+#     posts_html = []
+#     for post in posts:
+#         post = dict(post)
+#         post["description"] = markdown.markdown(post["description"], extensions=["fenced_code", "codehilite"])
+#         posts_html.append(post)
+
+#     return render_template("site_updates.html", posts=posts_html)
+
+
 # @app.route("/get_coordinates/<city_name>")
 # def get_coordinates(city_name):
 #     """Return coordinates of a city from GeoJSON."""
@@ -175,9 +208,32 @@ def blog():
 def terrain():
     return render_template("terrain.html")
 
-@app.route('/food-map')
+@app.route("/food-map")
 def food_map():
-    return render_template('food_map.html')
+    return render_template("food_map.html")
+
+@app.route("/api/food")
+def get_food():
+    """Return all food locations as JSON"""
+    conn = get_FOOD_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM food_locations")
+    rows = cur.fetchall()
+    conn.close()
+
+    food_list = [
+        {
+            "id": row["id"],
+            "name": row["name"],
+            "cuisine": row["cuisine"],
+            "rating": row["rating"],
+            "coords": [row["lon"], row["lat"]],
+            "desc": row["desc"],
+            "link": row["link"]
+        }
+        for row in rows
+    ]
+    return jsonify(food_list)
 
 # -------------------------
 # Admin Login
@@ -273,6 +329,64 @@ def delete_blog_post(post_id):
     conn.close()
     flash("Post deleted successfully!")
     return redirect(url_for("admin_blog"))
+
+# -------------------------
+# Admin: Site Updates
+# -------------------------
+# @app.route("/admin/updates", methods=["GET", "POST"])
+# @requires_auth
+# def admin_updates():
+#     """Admin interface to add, edit, and view site updates."""
+#     conn = get_updates_connection()
+
+#     # Add new post
+#     if request.method == "POST" and "new_title" in request.form:
+#         conn.execute(
+#             "INSERT INTO posts (title, description, location, date) VALUES (?, ?, ?, ?)",
+#             (
+#                 request.form["new_title"],
+#                 request.form["new_description"],
+#                 request.form["new_location"],
+#                 request.form["new_date"]
+#             )
+#         )
+#         conn.commit()
+#         conn.close()
+#         flash("Update added successfully!")
+#         return redirect(url_for("admin_updates"))
+
+#     # Edit existing post
+#     if request.method == "POST" and "edit_id" in request.form:
+#         conn.execute(
+#             "UPDATE posts SET title=?, description=?, location=?, date=? WHERE id=?",
+#             (
+#                 request.form["edit_title"],
+#                 request.form["edit_description"],
+#                 request.form["edit_location"],
+#                 request.form["edit_date"],
+#                 request.form["edit_id"]
+#             )
+#         )
+#         conn.commit()
+#         conn.close()
+#         flash("Update edited successfully!")
+#         return redirect(url_for("admin_updates"))
+
+#     # Load all posts
+#     posts = conn.execute("SELECT * FROM posts ORDER BY date DESC").fetchall()
+#     conn.close()
+#     return render_template("admin_updates.html", posts=posts)
+
+
+# @app.route("/admin/updates/delete/<int:post_id>", methods=["POST"])
+# @requires_auth
+# def delete_update(post_id):
+#     conn = get_updates_connection()
+#     conn.execute("DELETE FROM posts WHERE id=?", (post_id,))
+#     conn.commit()
+#     conn.close()
+#     flash("Update deleted successfully!")
+#     return redirect(url_for("admin_updates"))
 
 # -------------------------
 # Admin Routes: Pictures

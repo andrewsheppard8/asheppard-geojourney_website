@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Site Updates{% endblock %}
+
+{% block content %}
+<section class="site-updates">
+    <h1>Site Updates</h1>
+
+    <div class="update-list">
+        {% for post in posts %}
+        <div class="update-post">
+            <h2>{{ post['title'] }}</h2>
+            {% if post['location'] %}
+            <p class="post-meta"><em>{{ post['location'] }}</em> | <strong>{{ post['date'] | datetimeformat }}</strong></p>
+            {% else %}
+            <p class="post-meta"><strong>{{ post['date'] | datetimeformat }}</strong></p>
+            {% endif %}
+            <div class="update-description">
+                {{ post['description'] | safe }}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

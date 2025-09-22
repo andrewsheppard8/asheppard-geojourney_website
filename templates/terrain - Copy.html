@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}3D Mountains Globe{% endblock %}
+
+{% block content %}
+<div id="cesiumContainer"></div>
+<div id="toolbar">
+  <h3>Summits</h3>
+</div>
+<div id="popup"></div>
+
+<!-- Cesium CDN -->
+<script src="https://cesium.com/downloads/cesiumjs/releases/1.133/Build/Cesium/Cesium.js"></script>
+<link href="https://cesium.com/downloads/cesiumjs/releases/1.133/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+
+<script>
+  // Cesium access token
+  Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJmY2FmNGY3Yy04Njc5LTQxNGEtYjNlNi1kNTllMDAzNDMyNzkiLCJpZCI6MzQyOTg5LCJpYXQiOjE3NTgzMTg0Nzd9.djuPPuVjdx8CSbzNRIuAM7g-OzvMyfudddoUMaxhdEo';
+
+  const viewer = new Cesium.Viewer('cesiumContainer', {
+    terrain: Cesium.Terrain.fromWorldTerrain(),
+    infoBox: true,
+    selectionIndicator: false
+  });
+
+  // Initial camera over Asia
+  viewer.camera.flyTo({
+    destination: Cesium.Cartesian3.fromDegrees(90.0, 30.0, 20000000)
+  });
+
+  const popup = document.getElementById('popup');
+
+  // Load GeoJSON summits
+  const geojsonUrl = '/data/mountains.geojson';
+  Cesium.GeoJsonDataSource.load(geojsonUrl, { clampToGround: true }).then(dataSource => {
+    viewer.dataSources.add(dataSource);
+    const entities = dataSource.entities.values;
+    const toolbar = document.getElementById('toolbar');
+
+    entities.forEach(entity => {
+      const name = entity.properties.name.getValue();
+      const date = entity.properties.date ? entity.properties.date.getValue() : 'Unknown';
+      const rating = entity.properties.rating ? entity.properties.rating.getValue() : 'N/A';
+
+      // Remove default GeoJSON symbols
+      entity.point = undefined;
+      entity.polygon = undefined;
+      entity.polyline = undefined;
+
+      // Toolbar fly-to button
+      const btn = document.createElement('button');
+      btn.textContent = `${date} — ${name}`;
+      btn.onclick = () => {
+        viewer.flyTo(entity, {
+          duration: 2.0,
+          offset: new Cesium.HeadingPitchRange(
+            Cesium.Math.toRadians(0.0),
+            Cesium.Math.toRadians(-30.0),
+            20000
+          )
+        });
+      };
+      toolbar.appendChild(btn);
+    });
+
+    // Custom click popup
+    const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+    handler.setInputAction(function (click) {
+      const pickedObject = viewer.scene.pick(click.position);
+      if (Cesium.defined(pickedObject) && pickedObject.id) {
+        const entity = pickedObject.id;
+        const name = entity.properties.name.getValue();
+        const date = entity.properties.date.getValue();
+        const rating = entity.properties.rating.getValue();
+        const difficulty = entity.properties.difficulty.getValue();
+        const distance = entity.properties['distance (mi)'].getValue();
+        const crowds = entity.properties.crowds.getValue();
+
+        popup.style.left = click.position.x + 10 + 'px';
+        popup.style.top = click.position.y + 10 + 'px';
+        // popup.innerHTML = `
+        //   <strong>${name}</strong><br>
+        //   Date: ${date}<br>
+        //   Rating: ${rating} / 5<br>
+        //   Difficulty: ${difficulty} / 10<br>
+        //   Distance: ${distance} mi<br>
+        //   Crowds: ${crowds}
+        // `;
+        popup.innerHTML = `
+          <strong>${name}</strong><br>
+        `;
+        popup.style.display = 'block';
+      } else {
+        popup.style.display = 'none';
+      }
+    }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+  });
+
+  // Optional OSM buildings
+  (async () => {
+    const buildingTileset = await Cesium.createOsmBuildingsAsync();
+    viewer.scene.primitives.add(buildingTileset);
+  })();
+
+  viewer.scene.globe.enableLighting = false;
+  viewer.scene.globe.depthTestAgainstTerrain = true;
+</script>
+{% endblock %}
