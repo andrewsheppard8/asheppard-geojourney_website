@@ -1,6 +1,10 @@
 # asheppard-geojourney_Website
 
-I am going on a big trip through Asia and I want to practice creating an API using Flask. And then it completely took on a mind of its own. This is practice creating/managing spatial information. It is very much a work in progress.
+I am going on a big trip through Asia and I want to practice creating an API using Flask. That was the start, anyway. Now it is much more than that.
+
+It now includes muliple databases, authentication, image clean up/optimization, usese Leaflet, Cesium and Map Libre. It is fully updatable within the browser. 
+
+I am in the process of creating a site update page to track continuing updates to the site. Bu
 
 Some minor things I always forget:
 
