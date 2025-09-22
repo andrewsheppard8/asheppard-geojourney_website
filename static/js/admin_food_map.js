@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (window.locations && Array.isArray(window.locations)) {
         window.locations.forEach(loc => {
-            const marker = L.marker([loc.lat, loc.lon], { draggable: true })
+            const marker = L.marker([loc.lat, loc.lon], { draggable: false })
                 .addTo(map)
                 .bindPopup(`<strong>${loc.name}</strong><br>Cuisine: ${loc.cuisine}<br>Rating: ${loc.rating}`);
 

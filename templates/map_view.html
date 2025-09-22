@@ -3,7 +3,11 @@
 {% block title %}Main Map{% endblock %}
 
 {% block content %}
-<section class="map-page">
+<section class="map-page" style="position:relative;">
+    <!-- Small note -->
+    <div style="position:absolute; top:10px; right:10px; font-size:1.0rem; z-index:10;">
+        <a href="https://leafletjs.com/" target="_blank" style="color:#555;">Powered by Leaflet</a>
+    </div>
     <h1>Map of Places Visited</h1>
 
     <!-- <div id="geocode-search">

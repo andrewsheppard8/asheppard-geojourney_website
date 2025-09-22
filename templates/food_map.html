@@ -3,7 +3,11 @@
 {% block title %}Food Map{% endblock %}
 
 {% block content %}
-<section class="map-page">
+<section class="map-page" style="position:relative;">
+    <!-- Small note -->
+    <div style="position:absolute; top:10px; right:10px; font-size:1.2rem; color:#555; z-index:10;">
+        <a href="https://maplibre.org/" target="_blank" style="color:#555; font-size:1.0rem;">Powered by MapLibre GL JS</a>
+    </div>
     <h1>Map of Food & Drink Locations</h1>
 
     <!-- Controls -->
@@ -36,12 +40,13 @@
     <div id="map" style="width: 100%; height: 80vh;"></div>
 
     <!-- Map legend -->
-<div id="legend">
-    <h4>Rating Legend</h4>
-    <div><span class="legend-color" style="background:#2E7D32"></span> 4.5 - 5.0</div>
-    <div><span class="legend-color" style="background:#FFB300"></span> 4.0 - 4.4</div>
-    <div><span class="legend-color" style="background:#D32F2F"></span> < 4.0</div>
-</div>
+    <!-- <div id="legend">
+        <h4>Rating Legend</h4>
+        <div><span class="legend-color" style="background:#2E7D32"></span> 4.5 - 5.0</div>
+        <div><span class="legend-color" style="background:#FFB300"></span> 4.0 - 4.4</div>
+        <div><span class="legend-color" style="background:#D32F2F"></span>
+            < 4.0</div>
+        </div> -->
 </section>
 
 <!-- MapLibre CSS -->

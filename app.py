@@ -193,17 +193,6 @@ def blog():
 
 #     return render_template("site_updates.html", posts=posts_html)
 
-
-# @app.route("/get_coordinates/<city_name>")
-# def get_coordinates(city_name):
-#     """Return coordinates of a city from GeoJSON."""
-#     city_name = city_name.lower()
-#     for feat in geo_data.get("features", []):
-#         if feat.get("properties", {}).get("city", "").lower() == city_name:
-#             coords = feat["geometry"]["coordinates"]
-#             return jsonify({"coordinates": f"{coords[1]}, {coords[0]}"})
-#     return jsonify({"error": "City not found"}), 404
-
 @app.route("/terrain")
 def terrain():
     return render_template("terrain.html")
@@ -262,8 +251,6 @@ def requires_auth(f):
             return authenticate()
         return f(*args, **kwargs)
     return decorated
-
-
 
 # -------------------------
 # Admin Routes: Dashboard

@@ -97,15 +97,6 @@ body {
     color: #ffffff;
 }
 
-/* .hero {
-    background: linear-gradient(135deg, #353535, #121212); 
-    position: relative;
-    text-align: center;
-    padding: 120px 20px; 
-    color: #ffffff;
-    overflow: hidden;
-} */
-
 /* Optional overlay for depth */
 .hero::after {
     content: "";
