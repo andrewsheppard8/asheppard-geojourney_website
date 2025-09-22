@@ -1,5 +1,5 @@
 import sqlite3
-# import markdown
+import markdown
 import os
 import io
 import zipfile
@@ -49,7 +49,7 @@ print("Contents of PERSISTENT_DIR:", os.listdir(PERSISTENT_DIR))
 DB_NAME = os.path.join(PERSISTENT_DIR, "pictures.db")
 BLOG_DB = os.path.join(PERSISTENT_DIR, "blog.db")
 FOOD_DB = os.path.join(PERSISTENT_DIR, "food_map.db")
-# UPDATES_DB = os.path.join(PERSISTENT_DIR, "site_updates.db")
+UPDATES_DB = os.path.join(PERSISTENT_DIR, "site_update.db")
 
 # Create empty DB files if missing
 for db_file in [DB_NAME, BLOG_DB,FOOD_DB]:
@@ -86,11 +86,14 @@ def get_blog_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
-# def get_updates_connection():
-#     """Return a connection to site_updates.db with row access as dict."""
-#     conn = sqlite3.connect(UPDATES_DB)
-#     conn.row_factory = sqlite3.Row
-#     return conn
+def get_updates_connection():
+    """Return a connection to site_updates.db with row access as dict,
+    creating the table if it doesn't exist."""
+    conn = sqlite3.connect(UPDATES_DB)
+    conn.row_factory = sqlite3.Row
+    cur = conn.cursor()
+
+    return conn
 
 def get_FOOD_connection():
     """Return a connection to blog.db with row access as dict."""
@@ -173,25 +176,79 @@ def pictures():
 def blog():
     """Public blog page."""
     conn = get_blog_connection()
+    
     posts = conn.execute("SELECT * FROM posts ORDER BY date DESC").fetchall()
     conn.close()
     return render_template("blog.html", posts=posts)
 
-# @app.route("/site_updates")
-# def site_updates():
-#     """Public site updates page."""
-#     conn = get_updates_connection()
-#     posts = conn.execute("SELECT * FROM posts ORDER BY date DESC").fetchall()
-#     conn.close()
+@app.route("/site_updates")
+def site_updates():
+    """Public site updates page."""
+    conn = get_updates_connection()
 
-#     # Convert Markdown description to HTML
-#     posts_html = []
-#     for post in posts:
-#         post = dict(post)
-#         post["description"] = markdown.markdown(post["description"], extensions=["fenced_code", "codehilite"])
-#         posts_html.append(post)
+    # Check what tables exist
+    cur = conn.cursor()
+    cur.execute("SELECT name FROM sqlite_master WHERE type='table';")
+    tables = [t[0] for t in cur.fetchall()]
+    print("Tables in site_updates DB:", tables)  # this will show up in your console/logs
 
-#     return render_template("site_updates.html", posts=posts_html)
+    if "posts" not in tables:
+        conn.close()
+        return "Table 'posts' does not exist in the database.", 500
+
+    # Fetch posts only if the table exists
+    posts = conn.execute("SELECT * FROM posts ORDER BY date DESC").fetchall()
+    conn.close()
+
+    # Convert Markdown description to HTML
+    posts_html = []
+    for post in posts:
+        post = dict(post)
+        post["description"] = markdown.markdown(
+            post["description"], extensions=["fenced_code", "codehilite"]
+        )
+        posts_html.append(post)
+
+    return render_template("site_updates.html", posts=posts_html)
+
+# @app.route("/debug_site_updates")
+# def debug_site_updates():
+#     import os
+#     import sqlite3
+
+#     info = []
+
+#     # Show the database path Flask is using
+#     info.append(f"UPDATES_DB path: {UPDATES_DB}")
+#     info.append(f"Exists? {os.path.exists(UPDATES_DB)}")
+
+#     # Try to connect
+#     try:
+#         conn = sqlite3.connect(UPDATES_DB)
+#         info.append("✅ Connection successful")
+#         cur = conn.cursor()
+
+#         # List all tables
+#         cur.execute("SELECT name FROM sqlite_master WHERE type='table';")
+#         tables = [t[0] for t in cur.fetchall()]
+#         info.append(f"Tables in DB: {tables}")
+
+#         # If 'posts' table exists, show sample rows
+#         if "posts" in tables:
+#             cur.execute("SELECT * FROM posts")
+#             rows = cur.fetchall()
+#             info.append(f"Number of posts: {len(rows)}")
+#             for row in rows:
+#                 info.append(str(row))
+#         else:
+#             info.append("❌ Table 'posts' does not exist")
+
+#         conn.close()
+#     except sqlite3.Error as e:
+#         info.append(f"Database error: {e}")
+
+#     # Return everything as HTML for easy viewing
+#     return "<br>".join(info)
 
 @app.route("/terrain")
 def terrain():
@@ -320,61 +377,63 @@ def delete_blog_post(post_id):
 # -------------------------
 # Admin: Site Updates
 # -------------------------
-# @app.route("/admin/updates", methods=["GET", "POST"])
-# @requires_auth
-# def admin_updates():
-#     """Admin interface to add, edit, and view site updates."""
-#     conn = get_updates_connection()
+@app.route("/admin/updates", methods=["GET", "POST"])
+@requires_auth
+def admin_updates():
+    """Admin interface to add, edit, and view site updates."""
+    conn = get_updates_connection()
 
-#     # Add new post
-#     if request.method == "POST" and "new_title" in request.form:
-#         conn.execute(
-#             "INSERT INTO posts (title, description, location, date) VALUES (?, ?, ?, ?)",
-#             (
-#                 request.form["new_title"],
-#                 request.form["new_description"],
-#                 request.form["new_location"],
-#                 request.form["new_date"]
-#             )
-#         )
-#         conn.commit()
-#         conn.close()
-#         flash("Update added successfully!")
-#         return redirect(url_for("admin_updates"))
+    # Add new post
+    if request.method == "POST" and "new_title" in request.form:
+        conn.execute(
+            "INSERT INTO posts (title, description, location, date, images) VALUES (?, ?, ?, ?, ?)",
+            (
+                request.form["new_title"],
+                request.form["new_description"],
+                request.form.get("new_location"),
+                request.form["new_date"],
+                request.form.get("new_images", "[]")  # optional JSON array
+            )
+        )
+        conn.commit()
+        conn.close()
+        flash("Update added successfully!")
+        return redirect(url_for("admin_updates"))
 
-#     # Edit existing post
-#     if request.method == "POST" and "edit_id" in request.form:
-#         conn.execute(
-#             "UPDATE posts SET title=?, description=?, location=?, date=? WHERE id=?",
-#             (
-#                 request.form["edit_title"],
-#                 request.form["edit_description"],
-#                 request.form["edit_location"],
-#                 request.form["edit_date"],
-#                 request.form["edit_id"]
-#             )
-#         )
-#         conn.commit()
-#         conn.close()
-#         flash("Update edited successfully!")
-#         return redirect(url_for("admin_updates"))
+    # Edit existing post
+    if request.method == "POST" and "edit_id" in request.form:
+        conn.execute(
+            "UPDATE posts SET title=?, description=?, location=?, date=?, images=? WHERE id=?",
+            (
+                request.form["edit_title"],
+                request.form["edit_description"],
+                request.form.get("edit_location"),
+                request.form["edit_date"],
+                request.form.get("edit_images", "[]"),
+                request.form["edit_id"]
+            )
+        )
+        conn.commit()
+        conn.close()
+        flash("Update edited successfully!")
+        return redirect(url_for("admin_updates"))
 
-#     # Load all posts
-#     posts = conn.execute("SELECT * FROM posts ORDER BY date DESC").fetchall()
-#     conn.close()
-#     return render_template("admin_updates.html", posts=posts)
+    # Load all posts
+    posts = conn.execute("SELECT * FROM posts ORDER BY date DESC").fetchall()
+    conn.close()
+    return render_template("admin_updates.html", posts=posts)
 
 
-# @app.route("/admin/updates/delete/<int:post_id>", methods=["POST"])
-# @requires_auth
-# def delete_update(post_id):
-#     conn = get_updates_connection()
-#     conn.execute("DELETE FROM posts WHERE id=?", (post_id,))
-#     conn.commit()
-#     conn.close()
-#     flash("Update deleted successfully!")
-#     return redirect(url_for("admin_updates"))
-
+@app.route("/admin/updates/delete/<int:post_id>", methods=["POST"])
+@requires_auth
+def delete_update_post(post_id):
+    """Delete a site update post."""
+    conn = get_updates_connection()
+    conn.execute("DELETE FROM posts WHERE id = ?", (post_id,))
+    conn.commit()
+    conn.close()
+    flash("Update deleted successfully!")
+    return redirect(url_for("admin_updates"))
 # -------------------------
 # Admin Routes: Pictures
 # -------------------------
