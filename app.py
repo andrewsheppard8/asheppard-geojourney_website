@@ -527,7 +527,7 @@ def download_all():
             for file in files:
                 file_path = os.path.join(root, file)
                 # Preserve folder structure inside the zip
-                arcname = os.path.relpath(file_path, start="static")
+                arcname = os.path.relpath(file_path, start=PERSISTENT_DIR)
                 zip_file.write(file_path, arcname=arcname)
 
     # Make sure the buffer’s pointer is at the start
@@ -580,6 +580,41 @@ def download_all():
 @requires_auth
 def debug_persistent_dir():
     return f"PERSISTENT_DIR = {PERSISTENT_DIR}"
+
+# -------------------------
+# Check size of image file
+# -------------------------
+@app.route("/image_space")
+@requires_auth
+def image_space():
+    import os
+
+    IMAGE_FOLDER = os.path.join(PERSISTENT_DIR, "images")
+    DISK_LIMIT_MB = 1024  # 1 GB
+
+    total_size = 0
+    image_count = 0
+
+    for root, dirs, files in os.walk(IMAGE_FOLDER):
+        for file in files:
+            file_path = os.path.join(root, file)
+            if os.path.isfile(file_path):
+                total_size += os.path.getsize(file_path)
+                image_count += 1
+
+    total_size_mb = total_size / (1024 * 1024)
+    avg_size_mb = total_size_mb / image_count if image_count else 0
+    remaining_mb = DISK_LIMIT_MB - total_size_mb
+    est_additional_images = int(remaining_mb / avg_size_mb) if avg_size_mb else 0
+
+    return f"""
+    <h2>Image Storage Info</h2>
+    <p>Total images: {image_count}</p>
+    <p>Total size: {total_size_mb:.2f} MB</p>
+    <p>Average image size: {avg_size_mb:.2f} MB</p>
+    <p>Remaining space: {remaining_mb:.2f} MB</p>
+    <p>Estimated additional images you can add: {est_additional_images}</p>
+    """
 
 # -------------------------
 # Run the Flask App
