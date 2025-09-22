@@ -6,8 +6,14 @@
 <!-- Hero / Banner -->
 <section class="hero">
     <div class="hero-content">
-        <h2 id="hero-title">Discover, Explore, Map</h2>
+        <h1 class="hero-title">
+            <i class="fas fa-globe-americas"></i> Discover, Explore, Map
+        </h1>
         <p id="hero-tagline">One map, one picture, one story at a time.</p>
+        <!-- Call-to-Action Button -->
+        <a href="{{ url_for('map_view') }}" class="btn-primary hero-btn">
+            Start Exploring Maps
+        </a>
     </div>
 </section>
 
@@ -19,9 +25,8 @@
         <img src="{{ url_for('static', filename='images/GitHub Professional Pic.jpg') }}" alt="Andrew Sheppard"
             class="intro-photo">
 
-        <!-- Right: Text + Featured Cards -->
+        <!-- Right: Intro Text -->
         <div class="intro-right">
-            <!-- Intro Text -->
             <div class="intro-text">
                 <p>Welcome! I’m Andrew Sheppard. This is my GeoJourney — a place where my travels, maps, and stories
                     come together. I created this site to practice working with databases while preparing for a big trip
@@ -29,36 +34,34 @@
 
                 <p>As a GIS developer, I wanted to explore different libraries and techniques for sharing geographic
                     data. I built this site entirely from scratch, using only free tools and libraries. It’s the
-                    culmination
-                    of that passion, combining interactive maps, galleries, and blog stories from my travels. The only
-                    cost
-                    was hosting.</p>
+                    culmination of that passion, combining interactive maps, galleries, and blog stories from my
+                    travels.</p>
 
                 <p>Explore interactive maps, browse photos, and read stories about the people, places, and experiences
                     behind each journey. Whether you’re a fellow explorer or just curious about the world, there’s
                     something here for you.</p>
             </div>
+        </div>
 
-            <!-- Featured Cards -->
-            <div class="featured-cards">
-                <div class="featured-card">
-                    <i class="fas fa-map-marked-alt fa-3x"></i>
-                    <h3>Maps</h3>
-                    <p>Interactive maps showing my travels and explorations.</p>
-                    <a href="{{ url_for('map_view') }}" class="btn-secondary">View Maps</a>
-                </div>
-                <div class="featured-card">
-                    <i class="fas fa-camera-retro fa-3x"></i>
-                    <h3>Pictures</h3>
-                    <p>Gallery of my travels with high-quality photos.</p>
-                    <a href="{{ url_for('pictures') }}" class="btn-secondary">View Pictures</a>
-                </div>
-                <div class="featured-card">
-                    <i class="fas fa-blog fa-3x"></i>
-                    <h3>Blog</h3>
-                    <p>Read stories, tips, and experiences from my journeys.</p>
-                    <a href="{{ url_for('blog') }}" class="btn-secondary">Read Blog</a>
-                </div>
+        <!-- Featured Cards (FULL WIDTH) -->
+        <div class="featured-cards">
+            <div class="featured-card">
+                <i class="fas fa-map-marked-alt fa-3x"></i>
+                <h3>Maps</h3>
+                <p>Interactive maps showing my travels and explorations.</p>
+                <a href="{{ url_for('map_view') }}" class="btn-secondary">View Maps</a>
+            </div>
+            <div class="featured-card">
+                <i class="fas fa-camera-retro fa-3x"></i>
+                <h3>Pictures</h3>
+                <p>Gallery of my travels with high-quality photos.</p>
+                <a href="{{ url_for('pictures') }}" class="btn-secondary">View Pictures</a>
+            </div>
+            <div class="featured-card">
+                <i class="fas fa-blog fa-3x"></i>
+                <h3>Blog</h3>
+                <p>Read stories, tips, and experiences from my journeys.</p>
+                <a href="{{ url_for('blog') }}" class="btn-secondary">Read Blog</a>
             </div>
         </div>
     </div>
@@ -89,13 +92,65 @@
 </script>
 
 <style>
+    .hero-title {
+        font-family: "Merriweather Sans", sans-serif;
+        font-weight: 800;
+        font-size: 3rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 20px;
+        display: inline-flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .hero-title i {
+        color: #00bcd4;
+        font-size: 2.5rem;
+        animation: rotate-icon 6s linear infinite;
+    }
+
+    /* Small rotation animation for globe icon */
+    @keyframes rotate-icon {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    #hero-tagline {
+        font-size: 1.25rem;
+        margin-bottom: 30px;
+        transition: opacity 0.5s ease-in-out;
+        color: #cfd8dc;
+    }
+
+    .hero-btn {
+        display: inline-block;
+        padding: 15px 30px;
+        background-color: #00bcd4;
+        color: #fff;
+        font-weight: 600;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: background 0.3s ease, transform 0.3s ease;
+    }
+
+    .hero-btn:hover {
+        background-color: #008ba3;
+        transform: translateY(-3px);
+    }
+
     .main-container {
         display: flex;
         gap: 40px;
         max-width: 1400px;
         margin: 40px auto;
         background-color: rgba(50, 50, 50, 0.9);
-        border-radius: 12px;
+        border-radius: 6px;
         padding: 30px;
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
         flex-wrap: wrap;
@@ -127,12 +182,17 @@
 
     .featured-cards {
         display: flex;
+        justify-content: space-around;
+        /* spreads cards evenly */
         gap: 20px;
+        margin-top: 30px;
         flex-wrap: wrap;
+        flex: 1 1 100%;
     }
 
     .featured-card {
-        flex: 1;
+        flex: 1 1 0;
+        /* grow:1, shrink:1, base:0 */
         min-width: 200px;
         background-color: rgba(34, 34, 34, 0.8);
         padding: 20px;

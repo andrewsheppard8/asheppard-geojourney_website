@@ -43,20 +43,21 @@ body {
 
 /* Compass icon */
 .site-title i {
-  color: #ff9800; /* strong accent against dark bg */
-  font-size: 1.6em;
-  margin-right: 10px;
-  vertical-align: middle;
+    color: #ff9800;
+    /* strong accent against dark bg */
+    font-size: 1.6em;
+    margin-right: 10px;
+    vertical-align: middle;
 }
 
 /* Geo = cyan (matches nav links) */
 .site-title .geo {
-  color: #00bcd4;
+    color: #00bcd4;
 }
 
 /* Journey = light gray (matches text theme) */
 .site-title .journey {
-  color: #e0e0e0;
+    color: #e0e0e0;
 }
 
 .site-nav a {
@@ -132,6 +133,7 @@ body {
     position: relative;
     text-align: center;
     padding: 100px 20px;
+    border-radius: 6px;
     color: #ffffff;
 }
 
