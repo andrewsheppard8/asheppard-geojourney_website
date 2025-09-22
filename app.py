@@ -515,6 +515,35 @@ def download_all():
     )
 
 # -------------------------
+# Unzipping to persistent database
+# -------------------------
+
+@app.route("/admin/upload_data", methods=["GET", "POST"])
+@requires_auth
+def upload_data():
+    import zipfile
+
+    if request.method == "POST" and "file" in request.files:
+        file = request.files["file"]
+        if file.filename.endswith(".zip"):
+            # Save to a temporary location
+            temp_path = os.path.join("/tmp", file.filename)
+            file.save(temp_path)
+
+            # Unzip into PERSISTENT_DIR
+            with zipfile.ZipFile(temp_path, "r") as zip_ref:
+                zip_ref.extractall(PERSISTENT_DIR)
+
+            return "Data uploaded and extracted successfully!"
+
+    return '''
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <input type="submit" value="Upload ZIP">
+    </form>
+    '''
+
+# -------------------------
 # Run the Flask App
 # -------------------------
 if __name__ == "__main__":
