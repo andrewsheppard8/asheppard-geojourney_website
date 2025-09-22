@@ -31,7 +31,7 @@
   const popup = document.getElementById('popup');
 
   // Load GeoJSON summits
-  const geojsonUrl = '/static/data/mountains.geojson';
+  const geojsonUrl = '/data/mountains.geojson';
   Cesium.GeoJsonDataSource.load(geojsonUrl, { clampToGround: true }).then(dataSource => {
     viewer.dataSources.add(dataSource);
     const entities = dataSource.entities.values;

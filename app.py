@@ -4,7 +4,7 @@ import io
 import zipfile
 import json
 from functools import wraps
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Response, send_file
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Response, send_file, send_from_directory
 from datetime import datetime
 from dotenv import load_dotenv
 
@@ -29,7 +29,8 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 if os.path.exists("/var/data"):
     PERSISTENT_DIR = "/var/data"
 else:
-    PERSISTENT_DIR = os.path.join(BASE_DIR, "db")
+    PERSISTENT_DIR = os.path.join(BASE_DIR, "data")
+
 
 DB_NAME = os.path.join(PERSISTENT_DIR, "pictures.db")
 BLOG_DB = os.path.join(PERSISTENT_DIR, "blog.db")
@@ -63,6 +64,12 @@ with open(CITIES_GEOJSON, "r", encoding="utf-8") as f:
 
 with open(MOUNTAINS_GEOJSON, "r", encoding="utf-8") as f:
     mountains_data = json.load(f)
+
+# Serve GeoJSON files from the persistent disk folder.
+# This allows Flask to dynamically serve files from /var/data (PERSISTENT_DIR),
+@app.route("/data/<path:filename>")
+def serve_data(filename):
+    return send_from_directory(PERSISTENT_DIR, filename)
 
 # -------------------------
 # Template Filters

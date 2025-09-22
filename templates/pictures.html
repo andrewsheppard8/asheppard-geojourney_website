@@ -23,7 +23,7 @@
     <div class="gallery-item">
       <!-- Image -->
       <div class="gallery-image">
-        <img src="{{ url_for('static', filename='images/' ~ pic['filename']) }}" alt="{{ pic['title'] }}"
+        <img src="{{ url_for('serve_data', filename='images/' ~ pic['filename']) }}" alt="{{ pic['title'] }}"
           onclick="openModal(this)">
       </div>
 

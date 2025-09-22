@@ -19,7 +19,7 @@ const timeline = document.getElementById("location-list");
 // ---------------------------
 // Load GeoJSON
 // ---------------------------
-fetch("/static/data/cities.geojson")
+fetch("/data/cities.geojson")
     .then(res => res.json())
     .then(data => {
         geojsonData = data;
