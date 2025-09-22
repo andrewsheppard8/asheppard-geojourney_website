@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Admin Food Map{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+    <h1>Manage Food Locations</h1>
+
+    <form method="POST" id="food-form">
+
+        <!-- Geocode search -->
+        <div id="geocode-search" style="margin-bottom:10px;">
+            <input type="text" id="address-input" placeholder="Enter address" style="width:70%; padding:5px;">
+            <button type="button" id="geocode-btn" style="padding:5px 10px;">Locate</button>
+        </div>
+
+        <!-- Map -->
+        <div id="map" style="width:100%; height:500px; margin-bottom:20px; border:1px solid #ccc;"></div>
+
+        <!-- New location -->
+        <h2>Add New Location</h2>
+        <input type="text" name="new_name" placeholder="Name" style="width:30%;">
+        <input type="text" name="new_cuisine" placeholder="Cuisine" style="width:20%;">
+        <input type="number" step="0.1" name="new_rating" placeholder="Rating" style="width:10%;">
+        <input type="number" step="any" name="new_lat" id="new_lat" placeholder="Lat">
+        <input type="number" step="any" name="new_lon" id="new_lon" placeholder="Lon"><br><br>
+        <input type="text" name="new_desc" placeholder="Description" style="width:50%;">
+        <input type="text" name="new_link" placeholder="Link" style="width:40%;"><br><br>
+
+        <!-- Existing locations -->
+        <h2>Existing Locations</h2>
+        {% for loc in locations %}
+        <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px; border-radius:5px;">
+            <strong>{{ loc.name }}</strong><br>
+            Name: <input type="text" name="name_{{ loc.id }}" value="{{ loc.name }}" style="width:20%;">
+            Cuisine: <input type="text" name="cuisine_{{ loc.id }}" value="{{ loc.cuisine }}" style="width:15%;">
+            Rating: <input type="number" step="0.1" name="rating_{{ loc.id }}" value="{{ loc.rating }}"
+                style="width:10%;">
+            Lat: <input type="number" step="any" name="lat_{{ loc.id }}" value="{{ loc.lat }}" style="width:15%;">
+            Lon: <input type="number" step="any" name="lon_{{ loc.id }}" value="{{ loc.lon }}" style="width:15%;"><br>
+            Desc: <input type="text" name="desc_{{ loc.id }}" value="{{ loc.desc }}" style="width:40%;">
+            Link: <input type="text" name="link_{{ loc.id }}" value="{{ loc.link }}" style="width:40%;"><br>
+            <label><input type="checkbox" name="delete_{{ loc.id }}"> Delete</label>
+        </div>
+        {% endfor %}
+
+        <button type="submit" style="margin-top:15px; padding:10px 20px;">Save Changes</button>
+    </form>
+</div>
+
+<!-- Leaflet CSS/JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<!-- Pass locations to JS -->
+<script>
+    window.locations = {{ locations | tojson | safe }};
+</script>
+
+<!-- Admin Map JS -->
+<script src="{{ url_for('static', filename='js/admin_food_map.js') }}"></script>
+
+<style>
+    /* Optional: improve map/input layout */
+    #geocode-search input {
+        max-width: 70%;
+    }
+
+    #geocode-search button {
+        margin-left: 10px;
+    }
+</style>
+{% endblock %}

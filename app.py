@@ -661,6 +661,100 @@ def admin_terrain():
             json.dump(data, f, indent=2)
 
     return render_template("admin_terrain.html", features=data.get("features", []))
+
+# -------------------------
+# Admin Routes: Food Map
+# -------------------------
+@app.route("/admin/food_map", methods=["GET", "POST"])
+@requires_auth
+def admin_food_map():
+    """
+    Admin page for managing food locations.
+    Supports:
+      - Editing existing entries
+      - Deleting entries
+      - Adding new entries
+    """
+    conn = get_FOOD_connection()
+    cur = conn.cursor()
+
+    # -------------------
+    # Handle POST updates
+    # -------------------
+    if request.method == "POST":
+        # Get all IDs
+        cur.execute("SELECT id FROM food_locations")
+        all_ids = [row["id"] for row in cur.fetchall()]
+
+        for fid in all_ids:
+            if request.form.get(f"delete_{fid}") == "on":
+                cur.execute("DELETE FROM food_locations WHERE id=?", (fid,))
+                continue
+
+            cur.execute(
+                """
+                UPDATE food_locations
+                SET name=?, cuisine=?, rating=?, lat=?, lon=?, desc=?, link=?
+                WHERE id=?
+                """,
+                (
+                    request.form.get(f"name_{fid}"),
+                    request.form.get(f"cuisine_{fid}"),
+                    request.form.get(f"rating_{fid}"),
+                    request.form.get(f"lat_{fid}"),
+                    request.form.get(f"lon_{fid}"),
+                    request.form.get(f"desc_{fid}"),
+                    request.form.get(f"link_{fid}"),
+                    fid
+                )
+            )
+
+        # Add new entry
+        new_name = request.form.get("new_name")
+        new_cuisine = request.form.get("new_cuisine")
+        new_rating = request.form.get("new_rating")
+        new_lat = request.form.get("new_lat")
+        new_lon = request.form.get("new_lon")
+        new_desc = request.form.get("new_desc")
+        new_link = request.form.get("new_link")
+
+        if new_name and new_cuisine and new_lat and new_lon:
+            cur.execute(
+                """
+                INSERT INTO food_locations
+                (name, cuisine, rating, lat, lon, desc, link)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                """,
+                (new_name, new_cuisine, new_rating, new_lat, new_lon, new_desc, new_link)
+            )
+
+        conn.commit()
+        conn.close()
+        return redirect(url_for("admin_food_map"))
+
+    # -------------------
+    # GET → render page
+    # -------------------
+    cur.execute("SELECT * FROM food_locations ORDER BY name")
+    rows = cur.fetchall()
+
+    # Convert DB rows to JSON-serializable dicts
+    locations = []
+    for row in rows:
+        locations.append({
+            "id": row["id"],
+            "name": row["name"],
+            "cuisine": row["cuisine"],
+            "rating": row["rating"],
+            "lat": row["lat"],
+            "lon": row["lon"],
+            "desc": row["desc"],
+            "link": row["link"]
+        })
+
+    conn.close()
+    return render_template("admin_food_map.html", locations=locations)
+
 # -------------------------
 # Downloading the databases
 # -------------------------

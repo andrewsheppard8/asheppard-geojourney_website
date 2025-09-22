@@ -601,3 +601,135 @@ body {
   z-index: 1002;
 }
 
+/* ============================ */
+/* Container for Food Map Controls */
+/* ============================ */
+#food-map-controls {
+    position: absolute;
+    top: 170px;      /* distance from top */
+    left: 35px;     /* distance from left */
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 12px 18px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    display: flex;
+    flex-wrap: wrap; /* allow wrapping on small screens */
+    gap: 15px;
+    align-items: center;
+}
+
+/* ============================ */
+/* Individual Control Groups     */
+/* ============================ */
+#food-map-controls .control-group {
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+    color: #222;
+}
+
+/* Labels */
+#food-map-controls label {
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+/* Inputs, selects, sliders */
+#food-map-controls input[type="text"],
+#food-map-controls select,
+#food-map-controls input[type="range"] {
+    padding: 5px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    color: #222;
+    background-color: #fff;
+}
+
+/* Search row layout */
+#food-map-controls .search-row {
+    display: flex;
+    gap: 6px;
+}
+
+/* Buttons */
+#food-map-controls button {
+    padding: 5px 12px;
+    border: none;
+    border-radius: 6px;
+    background-color: #1E88E5;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+#food-map-controls button:hover {
+    background-color: #1565C0;
+}
+
+/* Rating value span */
+#food-map-controls #ratingValue {
+    font-weight: bold;
+    color: #222;
+    margin-left: 6px;
+}
+
+/* ============================ */
+/* Map container styling        */
+/* ============================ */
+#map {
+    width: 100%;
+    height: 80vh;
+    border-radius: 10px;
+}
+
+/* ============================ */
+/* Legend styling               */
+/* ============================ */
+#legend {
+    position: absolute;
+    bottom: 90px;
+    left: 40px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 12px;
+    color: #222;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    z-index: 1000;
+}
+
+#food-legend p {
+    margin: 5px 0;
+    display: flex;
+    align-items: center;
+}
+
+#food-legend span {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    margin-right: 6px;
+    border: 1px solid #ccc;
+}
+
+/* ============================ */
+/* Popup content styling        */
+/* ============================ */
+.maplibregl-popup-content,
+.leaflet-popup-content {
+    color: #222;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 14px;
+}
+
+.maplibregl-popup-content a,
+.leaflet-popup-content a {
+    color: #1E88E5;
+    text-decoration: underline;
+}
