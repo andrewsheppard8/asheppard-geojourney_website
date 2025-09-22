@@ -263,6 +263,11 @@ body {
     color: #0091a0;
 }
 
+.site-footer .sep {
+    color: #e0e0e0; /* keeps | white */
+    margin: 0 5px;
+}
+
 /* ===== Map Page ===== */
 .map-page h1 {
     text-align: center;
