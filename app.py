@@ -36,6 +36,9 @@ else:
 
 os.makedirs(PERSISTENT_DIR, exist_ok=True)
 
+print(f"PERSISTENT_DIR is: {PERSISTENT_DIR}")
+print("Contents of PERSISTENT_DIR:", os.listdir(PERSISTENT_DIR))
+
 # -------------------------
 # Database paths
 # -------------------------
