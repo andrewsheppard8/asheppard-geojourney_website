@@ -6,30 +6,195 @@
 <!-- Hero / Banner -->
 <section class="hero">
     <div class="hero-content">
-        <h2>Welcome to My GeoJourney</h2>
-        <p>Exploring the world one map, picture, and blog post at a time.</p>
+        <h2 id="hero-title">Discover, Explore, Map</h2>
+        <p id="hero-tagline">One map, one picture, one story at a time.</p>
     </div>
 </section>
 
-<!-- Featured Sections -->
-<section class="featured">
-    <div class="featured-card">
-        <i class="fas fa-map-marked-alt fa-3x"></i>
-        <h3>Maps</h3>
-        <p>Interactive maps showing my travels and explorations.</p>
-        <a href="{{ url_for('map_view') }}" class="btn-secondary">View Maps</a>
-    </div>
-    <div class="featured-card">
-        <i class="fas fa-camera-retro fa-3x"></i>
-        <h3>Pictures</h3>
-        <p>Gallery of my travels with high-quality photos.</p>
-        <a href="{{ url_for('pictures') }}" class="btn-secondary">View Pictures</a>
-    </div>
-    <div class="featured-card">
-        <i class="fas fa-blog fa-3x"></i>
-        <h3>Blog</h3>
-        <p>Read stories, tips, and experiences from my journeys.</p>
-        <a href="{{ url_for('blog') }}" class="btn-secondary">Read Blog</a>
+<!-- Intro / About Me -->
+<!-- Intro + Featured Cards Container -->
+<section class="main-intro">
+    <div class="main-container">
+        <!-- Left: Personal Photo -->
+        <img src="{{ url_for('static', filename='images/GitHub Professional Pic.jpg') }}" alt="Andrew Sheppard"
+            class="intro-photo">
+
+        <!-- Right: Text + Featured Cards -->
+        <div class="intro-right">
+            <!-- Intro Text -->
+            <div class="intro-text">
+                <p>Welcome! I’m Andrew Sheppard. This is my GeoJourney — a place where my travels, maps, and stories
+                    come together. I created this site to practice working with databases while preparing for a big trip
+                    abroad, and it has grown into a platform for sharing adventures and geographic insights.</p>
+
+                <p>As a GIS developer, I wanted to explore different libraries and techniques for sharing geographic
+                    data. I built this site entirely from scratch, using only free tools and libraries. It’s the
+                    culmination
+                    of that passion, combining interactive maps, galleries, and blog stories from my travels. The only
+                    cost
+                    was hosting.</p>
+
+                <p>Explore interactive maps, browse photos, and read stories about the people, places, and experiences
+                    behind each journey. Whether you’re a fellow explorer or just curious about the world, there’s
+                    something here for you.</p>
+            </div>
+
+            <!-- Featured Cards -->
+            <div class="featured-cards">
+                <div class="featured-card">
+                    <i class="fas fa-map-marked-alt fa-3x"></i>
+                    <h3>Maps</h3>
+                    <p>Interactive maps showing my travels and explorations.</p>
+                    <a href="{{ url_for('map_view') }}" class="btn-secondary">View Maps</a>
+                </div>
+                <div class="featured-card">
+                    <i class="fas fa-camera-retro fa-3x"></i>
+                    <h3>Pictures</h3>
+                    <p>Gallery of my travels with high-quality photos.</p>
+                    <a href="{{ url_for('pictures') }}" class="btn-secondary">View Pictures</a>
+                </div>
+                <div class="featured-card">
+                    <i class="fas fa-blog fa-3x"></i>
+                    <h3>Blog</h3>
+                    <p>Read stories, tips, and experiences from my journeys.</p>
+                    <a href="{{ url_for('blog') }}" class="btn-secondary">Read Blog</a>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
+
+<script>
+    const taglines = [
+        "One map, one picture, one story at a time.",
+        "Interactive maps and stories from my travels.",
+        "Discover the world through my adventures.",
+    ];
+
+    let index = 0;
+    const taglineEl = document.getElementById("hero-tagline");
+
+    setInterval(() => {
+        // Fade out
+        taglineEl.style.opacity = 0;
+
+        setTimeout(() => {
+            // Change text after fade-out
+            index = (index + 1) % taglines.length;
+            taglineEl.textContent = taglines[index];
+            // Fade in
+            taglineEl.style.opacity = 1;
+        }, 500); // matches your CSS transition duration
+    }, 8000);
+</script>
+
+<style>
+    .main-container {
+        display: flex;
+        gap: 40px;
+        max-width: 1400px;
+        margin: 40px auto;
+        background-color: rgba(50, 50, 50, 0.9);
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+        flex-wrap: wrap;
+        /* allows wrapping on smaller screens */
+    }
+
+    .intro-photo {
+        width: 300px;
+        height: 300px;
+        object-fit: cover;
+        object-position: 70% 90%;
+        border-radius: 50%;
+        border: 4px solid #00bcd4;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        flex-shrink: 0;
+    }
+
+    .intro-right {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .intro-text {
+        line-height: 1.6;
+        font-size: 1.15rem;
+        margin-bottom: 30px;
+    }
+
+    .featured-cards {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .featured-card {
+        flex: 1;
+        min-width: 200px;
+        background-color: rgba(34, 34, 34, 0.8);
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        transition: transform 0.3s ease;
+    }
+
+    .featured-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .featured-card i {
+        margin-bottom: 10px;
+        color: #00bcd4;
+    }
+
+    .featured-card h3 {
+        margin: 10px 0;
+        color: #fff;
+    }
+
+    .featured-card p {
+        color: #ddd;
+    }
+
+    .featured-card a.btn-secondary {
+        margin-top: 10px;
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #00bcd4;
+        color: #fff;
+        border-radius: 6px;
+        text-decoration: none;
+        transition: background 0.3s ease;
+    }
+
+    .featured-card a.btn-secondary:hover {
+        background-color: #008ba3;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .featured-cards {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .main-container {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .intro-right {
+            width: 100%;
+        }
+
+        .intro-text {
+            margin-bottom: 20px;
+        }
+    }
+</style>
 {% endblock %}
