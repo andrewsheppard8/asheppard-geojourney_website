@@ -622,49 +622,45 @@ def image_space():
 # -------------------------
 @app.route("/image_optimize")
 @requires_auth
-def optimize_images():
-    """
-    Optimize all images in IMAGE_FOLDER in place.
-    Returns a summary JSON.
-    """
-    summary = {"processed": 0, "original_size_MB": 0, "optimized_size_MB": 0}
+def image_optimize():
+    optimized_count = 0
+    optimized_bytes_saved = 0
 
     for filename in os.listdir(IMAGE_FOLDER):
-        if not filename.lower().endswith((".jpg", ".jpeg", ".png")):
-            continue
-
         file_path = os.path.join(IMAGE_FOLDER, filename)
 
-        try:
-            original_size = os.path.getsize(file_path) / (1024 * 1024)
-
-            # Open image
-            with Image.open(file_path) as img:
-                # Resize if wider than 1920px
-                max_width = 1920
-                if img.width > max_width:
-                    ratio = max_width / img.width
-                    new_size = (max_width, int(img.height * ratio))
-                    img = img.resize(new_size, Image.ANTIALIAS)
-
-                # Save optimized image, overwrite original
-                img.save(file_path, optimize=True, quality=85)
-
-            optimized_size = os.path.getsize(file_path) / (1024 * 1024)
-
-            summary["processed"] += 1
-            summary["original_size_MB"] += original_size
-            summary["optimized_size_MB"] += optimized_size
-
-        except Exception as e:
-            print(f"Error optimizing {filename}: {e}")
+        if not os.path.isfile(file_path):
             continue
 
-    # Round sizes
-    summary["original_size_MB"] = round(summary["original_size_MB"], 2)
-    summary["optimized_size_MB"] = round(summary["optimized_size_MB"], 2)
+        try:
+            with Image.open(file_path) as img:
+                original_size = os.path.getsize(file_path)
 
-    return jsonify(summary)
+                # Resize if larger than 1920px width or height
+                max_dim = 1920
+                if img.width > max_dim or img.height > max_dim:
+                    img.thumbnail((max_dim, max_dim), Image.LANCZOS)
+
+                # Overwrite with optimized JPEG/PNG
+                if img.mode in ("RGBA", "LA") or (img.mode == "P" and "transparency" in img.info):
+                    # Preserve PNG with transparency
+                    img.save(file_path, optimize=True)
+                else:
+                    img = img.convert("RGB")  # Ensure JPEG-compatible
+                    img.save(file_path, format="JPEG", quality=85, optimize=True)
+
+                new_size = os.path.getsize(file_path)
+                optimized_bytes_saved += (original_size - new_size)
+                optimized_count += 1
+
+        except Exception as e:
+            print(f"Skipping {filename}: {e}")
+
+    return f"""
+    Image Optimization Complete!<br>
+    Total images processed: {optimized_count}<br>
+    Approximate bytes saved: {optimized_bytes_saved / 1024:.2f} KB
+    """
 
 # -------------------------
 # Run the Flask App

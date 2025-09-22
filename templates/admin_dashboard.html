@@ -12,8 +12,12 @@
         <li><a href="{{ url_for('admin_terrain') }}">Manage Cesium Points</a></li>
         <li><a href="{{ url_for('admin_pictures') }}">Manage Pictures</a></li>
         <li><a href="{{ url_for('admin_blog') }}">Manage Blog Posts</a></li>
-        
-        <!-- Add more admin pages as needed -->
+
+        <!-- Direct access to utility routes -->
+        <li><a href="{{ url_for('download_all') }}">Download All Data</a></li>
+        <li><a href="{{ url_for('debug_persistent_dir') }}">View Persistent Dir</a></li>
+        <li><a href="{{ url_for('image_space') }}">Image Storage Info</a></li>
+        <li><a href="{{ url_for('image_optimize') }}">Optimize Images</a></li>
     </ul>
 </div>
 {% endblock %}
