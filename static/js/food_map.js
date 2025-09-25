@@ -9,8 +9,8 @@ const API_KEY = "pV5qrUWfj8Cyn942dyn6";
 const map = new maplibregl.Map({
     container: 'map',
     style: `https://api.maptiler.com/maps/streets/style.json?key=${API_KEY}`,
-    center: [-122.42, 37.78],
-    zoom: 13
+    center: [0,20],
+    zoom: 1
 });
 
 let foodLocations = [];
