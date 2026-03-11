@@ -15,7 +15,7 @@
         <button id="geocode-btn">Locate</button>
     </div> -->
 
-    <div id="map-container">
+    <div id="map-container" style="position:relative;">
         <!-- Sidebar for timeline -->
         <aside id="timeline">
             <h3>Timeline of Visits</h3>
@@ -24,18 +24,35 @@
 
         <!-- Map container -->
         <div id="map"></div>
-    </div>
-</section>
 
-<!-- Leaflet CSS & JS -->
-<!-- Leaflet CSS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-<!-- Marker Cluster CSS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
-<!-- Custom styles -->
-<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script src="{{ url_for('static', filename='js/load_cities.js') }}"></script>
-<script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
-{% endblock %}
+        <!-- Attribution for icons
+        <div id="map-attribution" style="
+        position:absolute;
+        bottom:5px;
+        right:5px;
+        font-size:0.65rem;
+        color:#666;
+        z-index:1000;
+        background: rgba(59, 59, 59, 0.7);
+        padding: 2px 4px;
+        border-radius: 3px;
+    ">
+            Layer icon by <a href="https://www.flaticon.com/free-icons/layer" target="_blank">Amazona Adorada</a> from
+            <a href="https://www.flaticon.com/" target="_blank">Flaticon</a> |
+            Basemap icon by <a href="https://www.flaticon.com/free-icons/map-location" target="_blank">Freepik</a> from
+            <a href="https://www.flaticon.com/" target="_blank">Flaticon</a>
+        </div> -->
+    </div>
+
+    <!-- Leaflet CSS & JS -->
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <!-- Marker Cluster CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="{{ url_for('static', filename='js/load_cities.js') }}"></script>
+    <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+    {% endblock %}

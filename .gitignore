@@ -4,6 +4,9 @@ venv/
 #environment variables
 .env
 
+# Ignore SQLite DB files
+*.db
+
 # database archive downloads
 /database_archive/
 

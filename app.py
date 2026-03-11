@@ -62,6 +62,11 @@ for db_file in [DB_NAME, BLOG_DB,FOOD_DB]:
 IMAGE_FOLDER = os.path.join(PERSISTENT_DIR, "images")
 os.makedirs(IMAGE_FOLDER, exist_ok=True)
 
+#having trouble with photo updates, trying to fix it
+@app.route("/data/<path:filename>")
+def data(filename):
+    return send_from_directory(PERSISTENT_DIR, filename)
+
 # GeoJSON files (persistent)
 CITIES_GEOJSON = os.path.join(PERSISTENT_DIR, "cities.geojson")
 MOUNTAINS_GEOJSON = os.path.join(PERSISTENT_DIR, "mountains.geojson")
@@ -454,13 +459,14 @@ def admin_pictures():
             title = request.form.get("title") or os.path.splitext(file.filename)[0]
             description = request.form.get("description") or ""
             date_taken = request.form.get("date_taken") or None
+            album = request.form.get("album") or ""
             filename = file.filename
             filepath = os.path.join(IMAGE_FOLDER, filename)
             file.save(filepath)
 
             conn.execute(
-                "INSERT INTO pictures (title, description, filename, date_taken) VALUES (?, ?, ?, ?)",
-                (title, description, filename, date_taken)
+                "INSERT INTO pictures (title, description, filename, date_taken, album) VALUES (?, ?, ?, ?, ?)",
+                (title, description, filename, date_taken, album)
             )
             conn.commit()
             flash(f"Uploaded {filename} successfully!")
@@ -468,11 +474,12 @@ def admin_pictures():
         # Edit existing picture
         if "edit_id" in request.form:
             conn.execute(
-                "UPDATE pictures SET title = ?, description = ?, date_taken = ? WHERE id = ?",
+                "UPDATE pictures SET title = ?, description = ?, date_taken = ?, album = ? WHERE id = ?",
                 (
                     request.form["edit_title"],
                     request.form["edit_description"],
                     request.form.get("edit_date"),
+                    request.form.get("edit_album"),
                     request.form["edit_id"]
                 )
             )

@@ -21,6 +21,9 @@
         <label>Date Taken:<br>
             <input type="date" name="date_taken">
         </label><br>
+        <label>Album:<br>
+            <input type="text" name="album">
+        </label><br>
         <button type="submit" style="padding:10px 18px; font-size:1.1em; margin-top:10px;">Upload</button>
     </form>
 
@@ -31,11 +34,8 @@
     {% for pic in pictures %}
     <div
         style="border:1px solid #ccc; padding:15px; margin-bottom:20px; display:flex; gap:20px; align-items:flex-start; border-radius:8px; flex-wrap:wrap;">
-
-        <!-- Left: Thumbnail -->
         <div style="flex:0 0 150px;">
-            <img src="{{ url_for('static', filename='images/' ~ pic['filename']) }}" width="100%"
-                style="border-radius:6px;"><br>
+            <img src="{{ url_for('data', filename='images/' ~ pic['filename']) }}" width="100%" style="border-radius:6px;"><br>
         </div>
 
         <!-- Right: Edit form + Delete + Rotate -->
@@ -51,6 +51,9 @@
                 </label><br>
                 <label>Date Taken:<br>
                     <input type="date" name="edit_date" value="{{ pic['date_taken'] }}">
+                </label><br>
+                <label>Album:<br>
+                    <input type="text" name="edit_album" value="{{ pic['album'] }}">
                 </label><br>
                 <button type="submit" style="padding:8px 16px; font-size:1em; margin-top:5px;">Save Changes</button>
             </form>
