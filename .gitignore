@@ -4,9 +4,6 @@ venv/
 #environment variables
 .env
 
-# Backups of SQLite databases
-/backups/
-
 # database archive downloads
 /database_archive/
 
