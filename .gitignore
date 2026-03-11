@@ -7,6 +7,9 @@ venv/
 # Backups of SQLite databases
 /backups/
 
+# database archive downloads
+/database_archive/
+
 # Miscellaneous Python files
 /misc_py_files/
 
